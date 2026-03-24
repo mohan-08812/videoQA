@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>VideoQA – Multimodal Video Question Answering</title>
+  <meta name="description"
+    content="Ask questions about any video using AI-powered audio transcription, vision captions, and LLM reasoning." />
+  <link rel="stylesheet" href="style.css" />
+  <link rel="icon"
+    href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎬</text></svg>" />
+</head>
+
+<body>
+
+  <!-- ── Background Orbs ─────────────────────────────────── -->
+  <div class="bg-orbs" aria-hidden="true">
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+  </div>
+
+  <!-- ── App Root ────────────────────────────────────────── -->
+  <div id="app">
+
+    <!-- ════════════════════════════════════════
+         HEADER
+    ════════════════════════════════════════ -->
+    <header class="header" role="banner">
+
+      <!-- Logo -->
+      <a href="javascript:void(0)" class="header-logo" aria-label="VideoQA Home">
+        <div class="logo-icon" aria-hidden="true">🎬</div>
+        <span class="logo-text">VideoQA</span>
+      </a>
+
+      <!-- Tab navigation -->
+      <nav class="header-tabs" role="tablist" aria-label="Main navigation">
+        <button class="tab-btn active" id="tab-ask" data-tab="ask" role="tab" type="button" aria-selected="true"
+          aria-controls="panel-ask" tabindex="0">
+          💬 Ask
+        </button>
+
+        <button class="tab-btn" id="tab-summarize" data-tab="summarize" role="tab" type="button" aria-selected="false"
+          aria-controls="panel-summarize" tabindex="-1">
+          📊 Summarize
+        </button>
+
+        <button class="tab-btn" id="tab-transcript" data-tab="transcript" role="tab" type="button" aria-selected="false"
+          aria-controls="panel-transcript" tabindex="-1">
+          📄 Transcript
+        </button>
+      </nav>
+
+      <!-- Action buttons -->
+      <div class="header-actions">
+        <button class="btn-ghost" id="how-btn" type="button" aria-label="How it works">
+          <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"
+            aria-hidden="true">
+            <circle cx="12" cy="12" r="10" />
+            <path d="M12 16v-4M12 8h.01" />
+          </svg>
+          <span>How it works</span>
+        </button>
+
+        <button class="btn-ghost" id="clear-btn" type="button" aria-label="Clear session">
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"
+            aria-hidden="true">
+            <path d="M3 6h18M19 6l-1 14H6L5 6M10 11v6M14 11v6M9 6V4h6v2" />
+          </svg>
+          <span>Clear</span>
+        </button>
+
+        <!-- Mobile history drawer toggle -->
+        <button class="btn-icon history-btn-mobile" id="history-mobile-btn" type="button" aria-label="View history">
+          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"
+            aria-hidden="true">
+            <path d="M12 8v4l3 3M3.05 11a9 9 0 1 0 .5-3" />
+            <path d="M3 4v4h4" />
+          </svg>
+        </button>
+
+        <button class="btn-icon" id="theme-toggle" type="button" aria-label="Toggle theme">☀️</button>
+      </div>
+    </header>
+
+    <!-- ════════════════════════════════════════
+         HERO
+    ════════════════════════════════════════ -->
+    <section class="hero" aria-labelledby="hero-title">
+      <div class="hero-badge">
+        <span class="dot" aria-hidden="true"></span>
+        AI-Powered · Multimodal
+      </div>
+      <h1 id="hero-title">Ask any question about your video</h1>
+      <p>Powered by audio transcription + vision captions + LLM reasoning</p>
+
+      <div class="feature-chips" role="list" aria-label="Features">
+        <span class="chip" role="listitem"><span class="ci">⚡</span> Fast</span>
+        <span class="chip" role="listitem"><span class="ci">🌍</span> Multilingual</span>
+        <span class="chip" role="listitem"><span class="ci">✂️</span> Clip Retrieval</span>
+        <span class="chip" role="listitem"><span class="ci">📝</span> Summaries</span>
+        <span class="chip" role="listitem"><span class="ci">📄</span> Transcript Viewer</span>
+      </div>
+    </section>
+
+    <!-- ════════════════════════════════════════
+         UPLOAD PANEL (full width)
+    ════════════════════════════════════════ -->
+    <div style="padding: 0 var(--space-6); max-width:1300px; margin:0 auto; width:100%;">
+      <div class="glass upload-panel">
+
+        <!-- Drop zone -->
+        <div class="drop-zone" id="drop-zone" role="button" tabindex="0"
+          aria-label="Click or drag to upload a video file">
+          <input type="file" id="file-input"
+            accept="video/mp4,video/quicktime,video/x-matroska,video/webm,.mp4,.mov,.mkv,.webm"
+            aria-label="Upload video file" />
+          <span class="drop-icon" aria-hidden="true">📁</span>
+          <h3>Drop your video here or click to upload</h3>
+          <p>Supported formats: MP4, MOV, MKV, WebM</p>
+          <div class="drop-formats" aria-label="Supported formats">
+            <span class="fmt-badge">.mp4</span>
+            <span class="fmt-badge">.mov</span>
+            <span class="fmt-badge">.mkv</span>
+            <span class="fmt-badge">.webm</span>
+          </div>
+        </div>
+
+        <!-- File info -->
+        <div class="file-info" id="file-info" role="status" aria-live="polite">
+          <span class="file-icon" aria-hidden="true">🎥</span>
+          <div class="file-meta">
+            <div class="file-name" id="file-name-display">—</div>
+            <div class="file-detail" id="file-detail-display">—</div>
+          </div>
+          <button class="file-remove" id="file-remove" type="button" aria-label="Remove file">✕</button>
+        </div>
+
+        <!-- Video preview -->
+        <div class="video-preview-wrap" id="video-preview-wrap">
+          <video id="video-preview" controls preload="metadata" aria-label="Video preview"></video>
+          
+          <!-- Manual Selection Tools -->
+          <div class="manual-selection-tools" id="manual-selection-tools" style="display: none; flex-direction: column; gap: 10px; margin-top: 15px; padding: 15px; background: rgba(255,255,255,0.05); border-radius: 8px;">
+            <div style="display: flex; gap: 15px; flex-wrap: wrap; align-items: center;">
+              <div class="form-group" style="margin: 0; flex: 1; min-width: 120px;">
+                <label class="form-label" for="manual-start">Start Time (sec)</label>
+                <input type="number" id="manual-start" class="select-styled" placeholder="0" min="0" step="0.1" style="width: 100%;">
+              </div>
+              <div class="form-group" style="margin: 0; flex: 1; min-width: 120px;">
+                <label class="form-label" for="manual-end">End Time (sec)</label>
+                <input type="number" id="manual-end" class="select-styled" placeholder="All" min="0" step="0.1" style="width: 100%;">
+              </div>
+              <button class="btn-secondary" id="add-frame-btn" type="button" style="margin-top: 24px; white-space: nowrap;">📸 Add Current Frame</button>
+            </div>
+            <div id="manual-frames-list" style="display: flex; gap: 8px; flex-wrap: wrap;"></div>
+            <p style="font-size: 12px; color: var(--text-muted); margin: 0;">Optional: Specify a start/end time to process a sub-clip, and manually pick keyframes. Leave blank to process the whole video automatically.</p>
+          </div>
+        </div>
+
+        <!-- Controls -->
+        <div class="upload-controls">
+          <div class="form-group">
+            <label class="form-label" for="language-select">Language</label>
+            <select class="select-styled" id="language-select" aria-label="Select language">
+              <optgroup label="🌍 World Languages">
+                <option value="en">English</option>
+                <option value="es">Spanish</option>
+                <option value="fr">French</option>
+                <option value="de">German</option>
+                <option value="zh">Chinese</option>
+                <option value="ar">Arabic</option>
+                <option value="ja">Japanese</option>
+                <option value="ko">Korean</option>
+                <option value="pt">Portuguese</option>
+                <option value="ru">Russian</option>
+                <option value="it">Italian</option>
+              </optgroup>
+              <optgroup label="🇮🇳 Indian Languages">
+                <option value="hi">Hindi (हिन्दी)</option>
+                <option value="te">Telugu (తెలుగు)</option>
+                <option value="ta">Tamil (தமிழ்)</option>
+                <option value="kn">Kannada (ಕನ್ನಡ)</option>
+                <option value="ml">Malayalam (മലയാളം)</option>
+                <option value="mr">Marathi (मराठी)</option>
+                <option value="bn">Bengali (বাংলা)</option>
+                <option value="pa">Punjabi (ਪੰਜਾਬੀ)</option>
+                <option value="gu">Gujarati (ગુજરાતી)</option>
+                <option value="ur">Urdu (اردو)</option>
+              </optgroup>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Processing Mode</label>
+            <div class="mode-toggle" role="group" aria-label="Processing mode">
+              <button class="mode-opt active" data-mode="fast" type="button" aria-pressed="true">⚡ Fast QA</button>
+              <button class="mode-opt" data-mode="full" type="button" aria-pressed="false">🔬 QA + Clip
+                Retrieval</button>
+            </div>
+          </div>
+
+          <button class="btn-primary" id="process-btn" type="button" disabled aria-label="Process video">
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"
+              aria-hidden="true">
+              <polygon points="5 3 19 12 5 21 5 3" />
+            </svg>
+            Process Video
+          </button>
+        </div>
+
+        <!-- Progress Timeline -->
+        <div class="progress-panel" id="progress-panel" role="status" aria-live="polite"
+          aria-label="Processing progress">
+          <div class="progress-header">
+            <span class="progress-title" id="progress-status">Starting…</span>
+            <span class="progress-pct" id="progress-pct">0%</span>
+          </div>
+          <div class="progress-bar-outer" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+            <div class="progress-bar-inner" id="progress-bar"></div>
+          </div>
+          <div class="progress-steps" id="progress-steps">
+            <!-- Populated by JS -->
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ════════════════════════════════════════
+         MAIN LAYOUT (Content + Sidebar)
+    ════════════════════════════════════════ -->
+    <div class="main-layout">
+
+      <!-- CONTENT AREA -->
+      <main class="content-area" role="main">
+
+        <!-- ── ASK TAB ───────────────────────────── -->
+        <section class="tab-panel active" id="panel-ask" role="tabpanel" aria-labelledby="tab-ask">
+          <div id="ask-content">
+            <!-- Populated by JS (demo state → ready state after processing) -->
+          </div>
+        </section>
+
+        <!-- ── SUMMARIZE TAB ─────────────────────── -->
+        <section class="tab-panel" id="panel-summarize" role="tabpanel" aria-labelledby="tab-summarize" hidden>
+          <div id="summarize-content">
+            <!-- Populated by JS -->
+          </div>
+        </section>
+
+        <!-- ── TRANSCRIPT TAB ────────────────────── -->
+        <section class="tab-panel" id="panel-transcript" role="tabpanel" aria-labelledby="tab-transcript" hidden>
+          <div id="transcript-content" style="overflow:hidden; border-radius:var(--radius-lg);" class="glass">
+            <!-- Populated by JS -->
+          </div>
+        </section>
+
+      </main>
+
+      <!-- HISTORY SIDEBAR -->
+      <aside class="sidebar" id="sidebar" aria-label="Q&A History">
+        <div class="glass history-card">
+          <div class="history-header">
+            <h3>🕐 History</h3>
+            <span class="history-count" id="history-count">0</span>
+          </div>
+          <div class="history-list" id="history-list" role="list">
+            <div class="history-empty">No questions yet.<br>Ask something to get started.</div>
+          </div>
+        </div>
+      </aside>
+
+    </div>
+
+    <!-- ════════════════════════════════════════
+         "HOW IT WORKS" MODAL
+    ════════════════════════════════════════ -->
+    <div class="modal-overlay" id="how-modal" role="dialog" aria-modal="true" aria-labelledby="modal-title" hidden>
+      <div class="glass modal-box">
+        <div class="modal-header">
+          <h2 id="modal-title">How VideoQA Works</h2>
+          <button class="modal-close" id="modal-close" type="button" aria-label="Close modal">✕</button>
+        </div>
+
+        <div class="how-steps">
+          <div class="how-step">
+            <div class="how-num">1</div>
+            <div>
+              <h4>📁 Upload Your Video</h4>
+              <p>Drag and drop any MP4, MOV, or MKV video. Select your language for accurate transcription.</p>
+            </div>
+          </div>
+
+          <div class="how-step">
+            <div class="how-num">2</div>
+            <div>
+              <h4>🔊 Audio Transcription</h4>
+              <p>The audio is extracted and transcribed using Whisper — a state-of-the-art multilingual speech
+                recognition model.</p>
+            </div>
+          </div>
+
+          <div class="how-step">
+            <div class="how-num">3</div>
+            <div>
+              <h4>👁️ Visual Understanding</h4>
+              <p>Key frames are extracted and described using vision models, capturing what's shown on screen.</p>
+            </div>
+          </div>
+
+          <div class="how-step">
+            <div class="how-num">4</div>
+            <div>
+              <h4>🧠 LLM Reasoning</h4>
+              <p>Your question is answered by an LLM with full context of the transcript + visual captions, finding the
+                most relevant clip.</p>
+            </div>
+          </div>
+
+          <div class="how-step">
+            <div class="how-num">5</div>
+            <div>
+              <h4>📊 Summaries & Insights</h4>
+              <p>Get video summaries, transcript key points, action items, and keywords — all AI-generated instantly.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════════════════════════════════════════
+         FOOTER
+    ════════════════════════════════════════ -->
+    <footer class="footer">
+      <p>
+        VideoQA · Multimodal AI · Built with 🧠 &amp; ☕ ·
+        <a href="javascript:void(0)" aria-label="View project on GitHub">View on GitHub</a>
+      </p>
+    </footer>
+
+  </div>
+
+  <!-- ── Toast Container ─────────────────────────────────── -->
+  <div class="toast-container" id="toast-container" aria-live="assertive" aria-atomic="true"></div>
+
+  <!-- ── Scripts ─────────────────────────────────────────── -->
+  <script src="mock.js"></script>
+  <script src="api.js"></script>
+  <script src="app.js"></script>
+
+</body>
+
+</html>

@@ -1,0 +1,13 @@
+.git
+.vscode
+.gemini
+__pycache__
+backend/venv
+backend/__pycache__
+backend/uploads/*
+backend/outputs/*
+backend/frames/*
+backend/.env
+backend/.env.*
+*.pyc
+Project_Report.md
