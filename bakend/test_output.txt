@@ -1,0 +1,28 @@
+﻿.\venv\Scripts\python.e
+xe : C:\Users\mohan\App
+Data\Local\Programs\Pyt
+hon\Python312\python.ex
+e: can't open file 'C:\
+\Users\\mohan\\OneDrive
+\\Desktop\\videoqa\\bac
+kend\\test_pipeline.py'
+: [Errno 2] No such 
+file or directory
+At line:1 char:1
++ .\venv\Scripts\python
+.exe test_pipeline.py 
+2>&1 | Out-File 
+-FilePath  ...
++ ~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~
+~~~
+    + CategoryInfo     
+         : NotSpecifi  
+  ed: (C:\Users\moha   
+ n\...le or directo    
+ry:String) [], Rem    
+oteException
+    + FullyQualifiedEr 
+   rorId : NativeComm  
+  andError
+ 

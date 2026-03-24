@@ -1,0 +1,32 @@
+# VideoQA Backend – Python Requirements
+# Install: pip install -r requirements.txt
+
+# ── Web Framework ─────────────────────────────────────────────
+fastapi==0.110.0
+uvicorn[standard]==0.29.0
+python-multipart==0.0.9
+python-dotenv==1.0.0
+
+# ── AI Models ─────────────────────────────────────────────────
+# faster-whisper – Speech-to-text (base model auto-downloaded on first run)
+faster-whisper
+
+# BLIP – Vision captioning (large model ~900MB, auto-downloaded)
+transformers==4.40.0
+torch==2.2.2
+torchvision==0.17.2
+Pillow==10.3.0
+
+# ── Video Processing ──────────────────────────────────────────
+moviepy==1.0.3
+opencv-python==4.9.0.80
+
+# ── HTTP / LLM ────────────────────────────────────────────────
+requests==2.31.0
+
+# ── Utilities ─────────────────────────────────────────────────
+numpy==1.26.4
+pydantic==2.6.4
+
+# ── Optional: ngrok for remote access ────────────────────────
+# pyngrok==7.1.6
