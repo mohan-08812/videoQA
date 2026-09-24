@@ -1,0 +1,32 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+env/
+.env
+
+# Node
+node_modules/
+
+# IDEs and OS
+.vscode/
+.DS_Store
+Thumbs.db
+
+# Project Specific
+uploads/
+outputs/
+frames/
+test_audio.wav
+cookies.txt
+*.mp4
+*.webm
+*.mkv
+*.wav
+*.jpg
+*.png
+
+# Models and Caches
+.cache/
+.gemini/

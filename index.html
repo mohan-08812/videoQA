@@ -126,6 +126,11 @@
             <span class="fmt-badge">.mkv</span>
             <span class="fmt-badge">.webm</span>
           </div>
+          <div class="or-divider" style="margin: 20px 0; font-size: 14px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px;">— OR —</div>
+          <div class="url-upload" style="display: flex; gap: 8px; width: 80%; max-width: 400px; margin: 0 auto;" onclick="event.stopPropagation()">
+            <input type="url" id="url-input" class="select-styled" placeholder="Paste video URL (YouTube, direct links, etc.)" style="width: 100%; flex: 1; min-width: 0;" aria-label="Video URL">
+            <button class="btn-secondary" id="add-url-btn" type="button" style="white-space: nowrap;">Add URL</button>
+          </div>
         </div>
 
         <!-- File info -->

@@ -1,0 +1,122 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800" width="100%" height="100%">
+    <defs>
+        <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M 0 0 L 10 5 L 0 10 z" fill="#000000" />
+        </marker>
+    </defs>
+
+    <!-- Background -->
+    <rect width="100%" height="100%" fill="#ffffff" />
+    
+    <!-- Title -->
+    <text x="600" y="80" font-family="Arial, sans-serif" font-size="32" font-weight="bold" fill="#000000" text-anchor="middle">VideoQA System Architecture</text>
+    <text x="600" y="115" font-family="Arial, sans-serif" font-size="16" fill="#000000" text-anchor="middle">End-to-End Processing &amp; Inference Pipeline</text>
+
+    <!-- Container for Backend -->
+    <rect x="360" y="160" width="480" height="560" rx="10" ry="10" fill="none" stroke="#000000" stroke-width="2" stroke-dasharray="10,5" />
+    <text x="600" y="195" font-family="Arial, sans-serif" font-size="18" font-weight="bold" fill="#000000" text-anchor="middle">Backend FastAPI Server</text>
+
+    <!-- Lines / Connections -->
+    <!-- UI <-> API -->
+    <path d="M 270 380 L 410 380" stroke="#000000" stroke-width="2" fill="none" marker-end="url(#arrow)" />
+    <text x="340" y="370" font-family="Arial, sans-serif" font-size="14" fill="#000000" text-anchor="middle">Upload / URL</text>
+    <path d="M 410 420 L 270 420" stroke="#000000" stroke-width="2" fill="none" marker-end="url(#arrow)" />
+    <text x="340" y="445" font-family="Arial, sans-serif" font-size="14" fill="#000000" text-anchor="middle">Answer &amp; Clip</text>
+
+    <!-- API -> yt-dlp -->
+    <path d="M 600 350 L 600 280" stroke="#000000" stroke-width="2" fill="none" marker-end="url(#arrow)" />
+    <text x="610" y="325" font-family="Arial, sans-serif" font-size="14" fill="#000000">URL Input</text>
+
+    <!-- yt-dlp -> External URL -->
+    <path d="M 700 240 L 920 240" stroke="#000000" stroke-width="2" stroke-dasharray="5,5" fill="none" marker-end="url(#arrow)" />
+    <text x="810" y="230" font-family="Arial, sans-serif" font-size="14" fill="#000000" text-anchor="middle">Fetch Stream</text>
+
+    <!-- yt-dlp -> Video Processor -->
+    <path d="M 500 240 L 390 240 L 390 525 L 460 525" stroke="#000000" stroke-width="2" fill="none" marker-end="url(#arrow)" />
+    <text x="380" y="380" font-family="Arial, sans-serif" font-size="14" fill="#000000" text-anchor="end">Video File</text>
+
+    <!-- API -> Video Processor (Direct) -->
+    <path d="M 600 450 L 600 480" stroke="#000000" stroke-width="2" fill="none" marker-end="url(#arrow)" />
+    <text x="610" y="475" font-family="Arial, sans-serif" font-size="14" fill="#000000">Direct MP4</text>
+
+    <!-- Video Processor -> Whisper -->
+    <path d="M 560 560 L 480 560 L 480 610" stroke="#000000" stroke-width="2" fill="none" marker-end="url(#arrow)" />
+    <text x="510" y="550" font-family="Arial, sans-serif" font-size="14" fill="#000000" text-anchor="middle">Audio</text>
+
+    <!-- Video Processor -> BLIP -->
+    <path d="M 640 560 L 720 560 L 720 610" stroke="#000000" stroke-width="2" fill="none" marker-end="url(#arrow)" />
+    <text x="680" y="550" font-family="Arial, sans-serif" font-size="14" fill="#000000" text-anchor="middle">Frames</text>
+
+    <!-- Whisper -> API -->
+    <path d="M 430 620 L 430 460" stroke="#000000" stroke-width="2" fill="none" marker-end="url(#arrow)" />
+    <text x="420" y="540" font-family="Arial, sans-serif" font-size="14" fill="#000000" text-anchor="end">Transcript</text>
+
+    <!-- BLIP -> API -->
+    <path d="M 770 620 L 770 460" stroke="#000000" stroke-width="2" fill="none" marker-end="url(#arrow)" />
+    <text x="780" y="540" font-family="Arial, sans-serif" font-size="14" fill="#000000" text-anchor="start">Captions</text>
+
+    <!-- API <-> LLM -->
+    <path d="M 780 380 L 920 380" stroke="#000000" stroke-width="2" fill="none" marker-end="url(#arrow)" />
+    <text x="850" y="370" font-family="Arial, sans-serif" font-size="14" fill="#000000" text-anchor="middle">Context + Question</text>
+
+    <path d="M 920 420 L 780 420" stroke="#000000" stroke-width="2" fill="none" marker-end="url(#arrow)" />
+    <text x="850" y="445" font-family="Arial, sans-serif" font-size="14" fill="#000000" text-anchor="middle">Answer &amp; Clip Data</text>
+
+
+    <!-- Nodes -->
+    <!-- User Interface -->
+    <g transform="translate(50, 360)">
+        <rect width="220" height="80" rx="8" ry="8" fill="#ffffff" stroke="#000000" stroke-width="2" />
+        <text x="110" y="38" font-family="Arial, sans-serif" font-size="18" font-weight="bold" fill="#000000" text-anchor="middle">User Interface</text>
+        <text x="110" y="58" font-family="Arial, sans-serif" font-size="14" fill="#000000" text-anchor="middle">Frontend (HTML/JS/CSS)</text>
+    </g>
+
+    <!-- External URL -->
+    <g transform="translate(930, 200)">
+        <rect width="220" height="80" rx="8" ry="8" fill="#ffffff" stroke="#000000" stroke-width="2" />
+        <text x="110" y="38" font-family="Arial, sans-serif" font-size="18" font-weight="bold" fill="#000000" text-anchor="middle">YouTube / URL</text>
+        <text x="110" y="58" font-family="Arial, sans-serif" font-size="14" fill="#000000" text-anchor="middle">External Media Source</text>
+    </g>
+
+    <!-- FastAPI -->
+    <g transform="translate(420, 350)">
+        <rect width="360" height="100" rx="8" ry="8" fill="#ffffff" stroke="#000000" stroke-width="2" />
+        <text x="180" y="45" font-family="Arial, sans-serif" font-size="20" font-weight="bold" fill="#000000" text-anchor="middle">FastAPI Server</text>
+        <text x="180" y="70" font-family="Arial, sans-serif" font-size="14" fill="#000000" text-anchor="middle">API Orchestrator &amp; Router</text>
+    </g>
+
+    <!-- yt-dlp -->
+    <g transform="translate(500, 210)">
+        <rect width="200" height="60" rx="8" ry="8" fill="#ffffff" stroke="#000000" stroke-width="2" />
+        <text x="100" y="35" font-family="Arial, sans-serif" font-size="18" font-weight="bold" fill="#000000" text-anchor="middle">yt-dlp</text>
+    </g>
+
+    <!-- Video Processor -->
+    <g transform="translate(470, 490)">
+        <rect width="260" height="70" rx="8" ry="8" fill="#ffffff" stroke="#000000" stroke-width="2" />
+        <text x="130" y="32" font-family="Arial, sans-serif" font-size="18" font-weight="bold" fill="#000000" text-anchor="middle">OpenCV / MoviePy</text>
+        <text x="130" y="52" font-family="Arial, sans-serif" font-size="14" fill="#000000" text-anchor="middle">Video Processing</text>
+    </g>
+
+    <!-- Whisper -->
+    <g transform="translate(390, 620)">
+        <rect width="180" height="70" rx="8" ry="8" fill="#ffffff" stroke="#000000" stroke-width="2" />
+        <text x="90" y="32" font-family="Arial, sans-serif" font-size="18" font-weight="bold" fill="#000000" text-anchor="middle">Whisper STT</text>
+        <text x="90" y="52" font-family="Arial, sans-serif" font-size="14" fill="#000000" text-anchor="middle">Audio Transcription</text>
+    </g>
+
+    <!-- BLIP -->
+    <g transform="translate(630, 620)">
+        <rect width="180" height="70" rx="8" ry="8" fill="#ffffff" stroke="#000000" stroke-width="2" />
+        <text x="90" y="32" font-family="Arial, sans-serif" font-size="18" font-weight="bold" fill="#000000" text-anchor="middle">BLIP Vision</text>
+        <text x="90" y="52" font-family="Arial, sans-serif" font-size="14" fill="#000000" text-anchor="middle">Image Captioning</text>
+    </g>
+
+    <!-- LLM -->
+    <g transform="translate(930, 350)">
+        <rect width="220" height="100" rx="8" ry="8" fill="#ffffff" stroke="#000000" stroke-width="2" />
+        <text x="110" y="45" font-family="Arial, sans-serif" font-size="20" font-weight="bold" fill="#000000" text-anchor="middle">Mistral-7B</text>
+        <text x="110" y="70" font-family="Arial, sans-serif" font-size="14" fill="#000000" text-anchor="middle">OpenRouter API</text>
+    </g>
+
+</svg>

@@ -8,6 +8,7 @@ const state = {
   tab: 'ask',
   phase: 'idle',       // idle | uploading | processing | ready
   file: null,
+  videoUrl: null,
   manualFrames: [],    // user selected frame timestamps
   sessionData: null,   // processVideo result
   currentAnswer: null,
@@ -93,6 +94,7 @@ function initHeaderActions() {
 function resetSession() {
   state.phase = 'idle';
   state.file = null;
+  state.videoUrl = null;
   state.manualFrames = [];
   state.sessionData = null;
   state.currentAnswer = null;
@@ -137,6 +139,17 @@ function initUpload() {
   const dropZone = $('drop-zone');
   const fileInput = $('file-input');
   const processBtn = $('process-btn');
+
+  const addUrlBtn = $('add-url-btn');
+  const urlInput = $('url-input');
+  if (addUrlBtn) {
+    addUrlBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const url = urlInput.value.trim();
+      if (!url) { showToast('Please enter a valid URL', 'info'); return; }
+      handleUrlSelect(url);
+    });
+  }
 
   // Click to open file picker
   dropZone.addEventListener('click', () => fileInput.click());
@@ -185,6 +198,7 @@ function handleFileSelect(file) {
     return;
   }
   state.file = file;
+  state.videoUrl = null;
   state.phase = 'uploading';
 
   // Show file info
@@ -196,6 +210,7 @@ function handleFileSelect(file) {
   // Video preview
   const url = URL.createObjectURL(file);
   const vp = $('video-preview');
+  vp.style.display = 'block';
   vp.src = url;
   vp.onloadedmetadata = () => {
     const dur = formatDuration(vp.duration);
@@ -207,22 +222,47 @@ function handleFileSelect(file) {
   showToast(`"${file.name}" selected`, 'success');
 }
 
+function handleUrlSelect(url) {
+  state.file = null;
+  state.videoUrl = url;
+  state.phase = 'uploading';
+
+  // Show file info
+  $('file-name-display').textContent = url;
+  $('file-detail-display').textContent = `URL Video`;
+  $('file-info').classList.add('show');
+  $('process-btn').disabled = false;
+
+  // Hide the <video> element because we can't preview all URLs uniformly,
+  // but keep the wrapper around to show the manual tools if user wants to set timestamps.
+  const vp = $('video-preview');
+  vp.style.display = 'none';
+  $('video-preview-wrap').classList.add('show');
+  $('manual-selection-tools').style.display = 'flex';
+
+  showToast(`URL selected`, 'success');
+}
+
 function removeFile() {
   state.file = null;
+  state.videoUrl = null;
   state.manualFrames = [];
   state.phase = 'idle';
   $('file-info').classList.remove('show');
   $('video-preview-wrap').classList.remove('show');
+  $('video-preview').style.display = 'block';
   $('manual-selection-tools').style.display = 'none';
   $('manual-start').value = '';
   $('manual-end').value = '';
   renderManualFrames();
   $('file-input').value = '';
+  const urlInput = $('url-input');
+  if(urlInput) urlInput.value = '';
   $('process-btn').disabled = true;
 }
 
 async function processVideo() {
-  if (!state.file) return;
+  if (!state.file && !state.videoUrl) return;
 
   const language = $('language-select').value;
   const mode = document.querySelector('.mode-opt.active')?.dataset.mode || 'fast';
@@ -247,7 +287,7 @@ async function processVideo() {
   resetProgressSteps(steps);
 
   try {
-    const data = await apiProcessVideo(state.file, language, mode, startTime, endTime, manFrames, (stepLabel, pct) => {
+    const data = await apiProcessVideo(state.file, state.videoUrl, language, mode, startTime, endTime, manFrames, (stepLabel, pct) => {
       const idx = steps.findIndex(s => s.label === stepLabel);
       updateProgressUI(pct, stepLabel, idx, steps.length);
     });
@@ -479,7 +519,7 @@ async function handleAsk() {
 
 function renderAnswerCards(result, container) {
   const answerHtml = result.answer.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
-  const safeAnswer = JSON.stringify(result.answer);
+  const safeAnswer = escapeHtml(JSON.stringify(result.answer));
   container.innerHTML = `
     <!-- Answer Card -->
     <div class="glass result-card">
@@ -720,7 +760,7 @@ function renderHistory() {
   }
 
   list.innerHTML = state.history.map((item, i) => `
-  < class="history-item ${i === 0 && state.historyIndex === 0 ? 'active' : ''}" onclick="restoreHistoryItem(${item.id})">
+  <div class="history-item ${i === 0 && state.historyIndex === 0 ? 'active' : ''}" onclick="restoreHistoryItem(${item.id})">
       <div class="hi-question">${escapeHtml(item.question)}</div>
       <div class="hi-time">${item.time}</div>
     </div>
@@ -755,7 +795,7 @@ function initSummarize() {
 function renderSummarizeUI() {
   const sc = $('summarize-content');
   sc.innerHTML = `
-  < class="summarize-grid">
+  <div class="summarize-grid">
       <!--Video Summary-->
       <div class="glass summarize-section" id="video-sum-section">
         <h3>🎥 Video Summary</h3>
@@ -824,7 +864,7 @@ async function generateVideoSummary() {
 
     showToast('Video summary generated!', 'success');
   } catch (err) {
-    out.innerHTML = `< style = "color:var(--error);"> Error: ${err.message}</span> `;
+    out.innerHTML = `<span style="color:var(--error);"> Error: ${err.message}</span> `;
   } finally {
     btn.disabled = false;
     btn.innerHTML = '✨ Generate Summary';
@@ -836,13 +876,13 @@ function renderVideoSummaryOutput(data) {
   const mode = state.summarizeMode;
 
   if (mode === 'short') {
-    out.innerHTML = `< style = "line-height:1.8;"> ${data.short}</> `;
+    out.innerHTML = `<div style="line-height:1.8;"> ${data.short}</div> `;
   } else if (mode === 'detailed') {
     out.innerHTML = data.detailed.map(b =>
-      `< class="summary-bullet"> <span>${b}</span></div> `
+      `<div class="summary-bullet"> <span>${typeof b === 'string' ? b.replace(/<[^>]*>/g, '').trim() : b}</span></div> `
     ).join('');
   } else if (mode === 'chapters') {
-    out.innerHTML = `< class="chapters-list">
+    out.innerHTML = `<div class="chapters-list">
   ${data.chapters.map(c => `
         <div class="chapter-item">
           <span class="chapter-time">${c.time}</span>
@@ -872,14 +912,14 @@ async function generateTranscriptSummary() {
     state.transcriptSummarized = true;
 
     out.innerHTML = `
-  < style = "margin-bottom:var(--space-4);">
+  <div style="margin-bottom:var(--space-4);">
     <div class="evidence-title" style="margin-bottom:var(--space-3);">🎯 Key Points</div>
-        ${data.key_points.map(p => `<div class="summary-bullet"><span>${p}</span></div>`).join('')}
+        ${data.key_points.map(p => `<div class="summary-bullet"><span>${typeof p === 'string' ? p.replace(/<[^>]*>/g, '').trim() : p}</span></div>`).join('')}
       </div>
       <div style="margin-bottom:var(--space-4);">
         <div class="evidence-title" style="margin-bottom:var(--space-3);">✅ Action Items</div>
         <ul class="action-items">
-          ${data.action_items.map(a => `<li>${a}</li>`).join('')}
+          ${data.action_items.map(a => `<li>${typeof a === 'string' ? a.replace(/<[^>]*>/g, '').trim() : a}</li>`).join('')}
         </ul>
       </div>
       <div>
@@ -901,7 +941,7 @@ async function generateTranscriptSummary() {
 
     showToast('Transcript summary ready!', 'success');
   } catch (err) {
-    out.innerHTML = `< style = "color:var(--error);"> Error: ${err.message}</span> `;
+    out.innerHTML = `<span style="color:var(--error);"> Error: ${err.message}</span> `;
   } finally {
     btn.disabled = false;
     btn.innerHTML = '📋 Summarize Transcript';

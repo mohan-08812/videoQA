@@ -4,7 +4,7 @@
 //            Set to `false` → calls the real FastAPI backend at API_BASE
 // ─────────────────────────────────────────────────────────────────────────────
 
-const MOCK_MODE = false;             // ← Set to true to use demo data without backend
+const MOCK_MODE = false;            // ← Set to true to use demo data without backend
 // For cloud deployment, use the current host. For local dev, use localhost:8000
 const API_BASE = window.location.origin.includes("localhost") || window.location.origin.includes("127.0.0.1") 
     ? "http://localhost:8000" 
@@ -30,6 +30,7 @@ async function apiFetch(path, options = {}) {
 /**
  * Upload and process a video.
  * @param {File}     file
+ * @param {string}   videoUrl
  * @param {string}   language  – "English" | "Hindi" | "Telugu" | "Spanish" …
  * @param {string}   mode      – "fast" | "full"
  * @param {string}   startTime
@@ -38,7 +39,7 @@ async function apiFetch(path, options = {}) {
  * @param {Function} onProgress – (label: string, pct: number) => void
  * @returns  { session_id, transcript, visuals, duration }
  */
-async function apiProcessVideo(file, language, mode, startTime, endTime, manualFrames, onProgress) {
+async function apiProcessVideo(file, videoUrl, language, mode, startTime, endTime, manualFrames, onProgress) {
     if (MOCK_MODE) {
         const steps = [
             { label: "Extracting audio", pct: 20 },
@@ -59,7 +60,12 @@ async function apiProcessVideo(file, language, mode, startTime, endTime, manualF
     if (onProgress) onProgress("Uploading video…", 5);
 
     const form = new FormData();
-    form.append("video", file);
+    if (file) {
+        form.append("video", file);
+    }
+    if (videoUrl) {
+        form.append("video_url", videoUrl);
+    }
     form.append("language", language);
     form.append("mode", mode);
     if (startTime) form.append("start_time", startTime);

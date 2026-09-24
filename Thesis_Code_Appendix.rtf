@@ -1,0 +1,5336 @@
+{\rtf1\ansi\ansicpg1252\deff0\nouicompat{\fonttbl{\f0\froman\fcharset0 Times New Roman;}{\f1\fmodern\fcharset0 Courier New;}}
+{\b\f0\fs32 Appendix: Project Source Code\par\par}
+
+{\b\f0\fs28 index.html\par}
+{\f1\fs20 <!DOCTYPE html>\par
+<html lang="en" data-theme="dark">\par
+\par
+<head>\par
+  <meta charset="UTF-8" />\par
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />\par
+  <title>VideoQA – Multimodal Video Question Answering</title>\par
+  <meta name="description"\par
+    content="Ask questions about any video using AI-powered audio transcription, vision captions, and LLM reasoning." />\par
+  <link rel="stylesheet" href="style.css" />\par
+  <link rel="icon"\par
+    href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎬</text></svg>" />\par
+</head>\par
+\par
+<body>\par
+\par
+  <!-- ── Background Orbs ─────────────────────────────────── -->\par
+  <div class="bg-orbs" aria-hidden="true">\par
+    <div class="orb orb-1"></div>\par
+    <div class="orb orb-2"></div>\par
+    <div class="orb orb-3"></div>\par
+  </div>\par
+\par
+  <!-- ── App Root ────────────────────────────────────────── -->\par
+  <div id="app">\par
+\par
+    <!-- ════════════════════════════════════════\par
+         HEADER\par
+    ════════════════════════════════════════ -->\par
+    <header class="header" role="banner">\par
+\par
+      <!-- Logo -->\par
+      <a href="javascript:void(0)" class="header-logo" aria-label="VideoQA Home">\par
+        <div class="logo-icon" aria-hidden="true">🎬</div>\par
+        <span class="logo-text">VideoQA</span>\par
+      </a>\par
+\par
+      <!-- Tab navigation -->\par
+      <nav class="header-tabs" role="tablist" aria-label="Main navigation">\par
+        <button class="tab-btn active" id="tab-ask" data-tab="ask" role="tab" type="button" aria-selected="true"\par
+          aria-controls="panel-ask" tabindex="0">\par
+          💬 Ask\par
+        </button>\par
+\par
+        <button class="tab-btn" id="tab-summarize" data-tab="summarize" role="tab" type="button" aria-selected="false"\par
+          aria-controls="panel-summarize" tabindex="-1">\par
+          📊 Summarize\par
+        </button>\par
+\par
+        <button class="tab-btn" id="tab-transcript" data-tab="transcript" role="tab" type="button" aria-selected="false"\par
+          aria-controls="panel-transcript" tabindex="-1">\par
+          📄 Transcript\par
+        </button>\par
+      </nav>\par
+\par
+      <!-- Action buttons -->\par
+      <div class="header-actions">\par
+        <button class="btn-ghost" id="how-btn" type="button" aria-label="How it works">\par
+          <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"\par
+            aria-hidden="true">\par
+            <circle cx="12" cy="12" r="10" />\par
+            <path d="M12 16v-4M12 8h.01" />\par
+          </svg>\par
+          <span>How it works</span>\par
+        </button>\par
+\par
+        <button class="btn-ghost" id="clear-btn" type="button" aria-label="Clear session">\par
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"\par
+            aria-hidden="true">\par
+            <path d="M3 6h18M19 6l-1 14H6L5 6M10 11v6M14 11v6M9 6V4h6v2" />\par
+          </svg>\par
+          <span>Clear</span>\par
+        </button>\par
+\par
+        <!-- Mobile history drawer toggle -->\par
+        <button class="btn-icon history-btn-mobile" id="history-mobile-btn" type="button" aria-label="View history">\par
+          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"\par
+            aria-hidden="true">\par
+            <path d="M12 8v4l3 3M3.05 11a9 9 0 1 0 .5-3" />\par
+            <path d="M3 4v4h4" />\par
+          </svg>\par
+        </button>\par
+\par
+        <button class="btn-icon" id="theme-toggle" type="button" aria-label="Toggle theme">☀️</button>\par
+      </div>\par
+    </header>\par
+\par
+    <!-- ════════════════════════════════════════\par
+         HERO\par
+    ════════════════════════════════════════ -->\par
+    <section class="hero" aria-labelledby="hero-title">\par
+      <div class="hero-badge">\par
+        <span class="dot" aria-hidden="true"></span>\par
+        AI-Powered · Multimodal\par
+      </div>\par
+      <h1 id="hero-title">Ask any question about your video</h1>\par
+      <p>Powered by audio transcription + vision captions + LLM reasoning</p>\par
+\par
+      <div class="feature-chips" role="list" aria-label="Features">\par
+        <span class="chip" role="listitem"><span class="ci">⚡</span> Fast</span>\par
+        <span class="chip" role="listitem"><span class="ci">🌍</span> Multilingual</span>\par
+        <span class="chip" role="listitem"><span class="ci">✂️</span> Clip Retrieval</span>\par
+        <span class="chip" role="listitem"><span class="ci">📝</span> Summaries</span>\par
+        <span class="chip" role="listitem"><span class="ci">📄</span> Transcript Viewer</span>\par
+      </div>\par
+    </section>\par
+\par
+    <!-- ════════════════════════════════════════\par
+         UPLOAD PANEL (full width)\par
+    ════════════════════════════════════════ -->\par
+    <div style="padding: 0 var(--space-6); max-width:1300px; margin:0 auto; width:100%;">\par
+      <div class="glass upload-panel">\par
+\par
+        <!-- Drop zone -->\par
+        <div class="drop-zone" id="drop-zone" role="button" tabindex="0"\par
+          aria-label="Click or drag to upload a video file">\par
+          <input type="file" id="file-input"\par
+            accept="video/mp4,video/quicktime,video/x-matroska,video/webm,.mp4,.mov,.mkv,.webm"\par
+            aria-label="Upload video file" />\par
+          <span class="drop-icon" aria-hidden="true">📁</span>\par
+          <h3>Drop your video here or click to upload</h3>\par
+          <p>Supported formats: MP4, MOV, MKV, WebM</p>\par
+          <div class="drop-formats" aria-label="Supported formats">\par
+            <span class="fmt-badge">.mp4</span>\par
+            <span class="fmt-badge">.mov</span>\par
+            <span class="fmt-badge">.mkv</span>\par
+            <span class="fmt-badge">.webm</span>\par
+          </div>\par
+          <div class="or-divider" style="margin: 20px 0; font-size: 14px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px;">— OR —</div>\par
+          <div class="url-upload" style="display: flex; gap: 8px; width: 80%; max-width: 400px; margin: 0 auto;" onclick="event.stopPropagation()">\par
+            <input type="url" id="url-input" class="select-styled" placeholder="Paste video URL (YouTube, direct links, etc.)" style="width: 100%; flex: 1; min-width: 0;" aria-label="Video URL">\par
+            <button class="btn-secondary" id="add-url-btn" type="button" style="white-space: nowrap;">Add URL</button>\par
+          </div>\par
+        </div>\par
+\par
+        <!-- File info -->\par
+        <div class="file-info" id="file-info" role="status" aria-live="polite">\par
+          <span class="file-icon" aria-hidden="true">🎥</span>\par
+          <div class="file-meta">\par
+            <div class="file-name" id="file-name-display">—</div>\par
+            <div class="file-detail" id="file-detail-display">—</div>\par
+          </div>\par
+          <button class="file-remove" id="file-remove" type="button" aria-label="Remove file">✕</button>\par
+        </div>\par
+\par
+        <!-- Video preview -->\par
+        <div class="video-preview-wrap" id="video-preview-wrap">\par
+          <video id="video-preview" controls preload="metadata" aria-label="Video preview"></video>\par
+          \par
+          <!-- Manual Selection Tools -->\par
+          <div class="manual-selection-tools" id="manual-selection-tools" style="display: none; flex-direction: column; gap: 10px; margin-top: 15px; padding: 15px; background: rgba(255,255,255,0.05); border-radius: 8px;">\par
+            <div style="display: flex; gap: 15px; flex-wrap: wrap; align-items: center;">\par
+              <div class="form-group" style="margin: 0; flex: 1; min-width: 120px;">\par
+                <label class="form-label" for="manual-start">Start Time (sec)</label>\par
+                <input type="number" id="manual-start" class="select-styled" placeholder="0" min="0" step="0.1" style="width: 100%;">\par
+              </div>\par
+              <div class="form-group" style="margin: 0; flex: 1; min-width: 120px;">\par
+                <label class="form-label" for="manual-end">End Time (sec)</label>\par
+                <input type="number" id="manual-end" class="select-styled" placeholder="All" min="0" step="0.1" style="width: 100%;">\par
+              </div>\par
+              <button class="btn-secondary" id="add-frame-btn" type="button" style="margin-top: 24px; white-space: nowrap;">📸 Add Current Frame</button>\par
+            </div>\par
+            <div id="manual-frames-list" style="display: flex; gap: 8px; flex-wrap: wrap;"></div>\par
+            <p style="font-size: 12px; color: var(--text-muted); margin: 0;">Optional: Specify a start/end time to process a sub-clip, and manually pick keyframes. Leave blank to process the whole video automatically.</p>\par
+          </div>\par
+        </div>\par
+\par
+        <!-- Controls -->\par
+        <div class="upload-controls">\par
+          <div class="form-group">\par
+            <label class="form-label" for="language-select">Language</label>\par
+            <select class="select-styled" id="language-select" aria-label="Select language">\par
+              <optgroup label="🌍 World Languages">\par
+                <option value="en">English</option>\par
+                <option value="es">Spanish</option>\par
+                <option value="fr">French</option>\par
+                <option value="de">German</option>\par
+                <option value="zh">Chinese</option>\par
+                <option value="ar">Arabic</option>\par
+                <option value="ja">Japanese</option>\par
+                <option value="ko">Korean</option>\par
+                <option value="pt">Portuguese</option>\par
+                <option value="ru">Russian</option>\par
+                <option value="it">Italian</option>\par
+              </optgroup>\par
+              <optgroup label="🇮🇳 Indian Languages">\par
+                <option value="hi">Hindi (हिन्दी)</option>\par
+                <option value="te">Telugu (తెలుగు)</option>\par
+                <option value="ta">Tamil (தமிழ்)</option>\par
+                <option value="kn">Kannada (ಕನ್ನಡ)</option>\par
+                <option value="ml">Malayalam (മലയാളം)</option>\par
+                <option value="mr">Marathi (मराठी)</option>\par
+                <option value="bn">Bengali (বাংলা)</option>\par
+                <option value="pa">Punjabi (ਪੰਜਾਬੀ)</option>\par
+                <option value="gu">Gujarati (ગુજરાતી)</option>\par
+                <option value="ur">Urdu (اردو)</option>\par
+              </optgroup>\par
+            </select>\par
+          </div>\par
+\par
+          <div class="form-group">\par
+            <label class="form-label">Processing Mode</label>\par
+            <div class="mode-toggle" role="group" aria-label="Processing mode">\par
+              <button class="mode-opt active" data-mode="fast" type="button" aria-pressed="true">⚡ Fast QA</button>\par
+              <button class="mode-opt" data-mode="full" type="button" aria-pressed="false">🔬 QA + Clip\par
+                Retrieval</button>\par
+            </div>\par
+          </div>\par
+\par
+          <button class="btn-primary" id="process-btn" type="button" disabled aria-label="Process video">\par
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"\par
+              aria-hidden="true">\par
+              <polygon points="5 3 19 12 5 21 5 3" />\par
+            </svg>\par
+            Process Video\par
+          </button>\par
+        </div>\par
+\par
+        <!-- Progress Timeline -->\par
+        <div class="progress-panel" id="progress-panel" role="status" aria-live="polite"\par
+          aria-label="Processing progress">\par
+          <div class="progress-header">\par
+            <span class="progress-title" id="progress-status">Starting…</span>\par
+            <span class="progress-pct" id="progress-pct">0%</span>\par
+          </div>\par
+          <div class="progress-bar-outer" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">\par
+            <div class="progress-bar-inner" id="progress-bar"></div>\par
+          </div>\par
+          <div class="progress-steps" id="progress-steps">\par
+            <!-- Populated by JS -->\par
+          </div>\par
+        </div>\par
+\par
+      </div>\par
+    </div>\par
+\par
+    <!-- ════════════════════════════════════════\par
+         MAIN LAYOUT (Content + Sidebar)\par
+    ════════════════════════════════════════ -->\par
+    <div class="main-layout">\par
+\par
+      <!-- CONTENT AREA -->\par
+      <main class="content-area" role="main">\par
+\par
+        <!-- ── ASK TAB ───────────────────────────── -->\par
+        <section class="tab-panel active" id="panel-ask" role="tabpanel" aria-labelledby="tab-ask">\par
+          <div id="ask-content">\par
+            <!-- Populated by JS (demo state → ready state after processing) -->\par
+          </div>\par
+        </section>\par
+\par
+        <!-- ── SUMMARIZE TAB ─────────────────────── -->\par
+        <section class="tab-panel" id="panel-summarize" role="tabpanel" aria-labelledby="tab-summarize" hidden>\par
+          <div id="summarize-content">\par
+            <!-- Populated by JS -->\par
+          </div>\par
+        </section>\par
+\par
+        <!-- ── TRANSCRIPT TAB ────────────────────── -->\par
+        <section class="tab-panel" id="panel-transcript" role="tabpanel" aria-labelledby="tab-transcript" hidden>\par
+          <div id="transcript-content" style="overflow:hidden; border-radius:var(--radius-lg);" class="glass">\par
+            <!-- Populated by JS -->\par
+          </div>\par
+        </section>\par
+\par
+      </main>\par
+\par
+      <!-- HISTORY SIDEBAR -->\par
+      <aside class="sidebar" id="sidebar" aria-label="Q&A History">\par
+        <div class="glass history-card">\par
+          <div class="history-header">\par
+            <h3>🕐 History</h3>\par
+            <span class="history-count" id="history-count">0</span>\par
+          </div>\par
+          <div class="history-list" id="history-list" role="list">\par
+            <div class="history-empty">No questions yet.<br>Ask something to get started.</div>\par
+          </div>\par
+        </div>\par
+      </aside>\par
+\par
+    </div>\par
+\par
+    <!-- ════════════════════════════════════════\par
+         "HOW IT WORKS" MODAL\par
+    ════════════════════════════════════════ -->\par
+    <div class="modal-overlay" id="how-modal" role="dialog" aria-modal="true" aria-labelledby="modal-title" hidden>\par
+      <div class="glass modal-box">\par
+        <div class="modal-header">\par
+          <h2 id="modal-title">How VideoQA Works</h2>\par
+          <button class="modal-close" id="modal-close" type="button" aria-label="Close modal">✕</button>\par
+        </div>\par
+\par
+        <div class="how-steps">\par
+          <div class="how-step">\par
+            <div class="how-num">1</div>\par
+            <div>\par
+              <h4>📁 Upload Your Video</h4>\par
+              <p>Drag and drop any MP4, MOV, or MKV video. Select your language for accurate transcription.</p>\par
+            </div>\par
+          </div>\par
+\par
+          <div class="how-step">\par
+            <div class="how-num">2</div>\par
+            <div>\par
+              <h4>🔊 Audio Transcription</h4>\par
+              <p>The audio is extracted and transcribed using Whisper — a state-of-the-art multilingual speech\par
+                recognition model.</p>\par
+            </div>\par
+          </div>\par
+\par
+          <div class="how-step">\par
+            <div class="how-num">3</div>\par
+            <div>\par
+              <h4>👁️ Visual Understanding</h4>\par
+              <p>Key frames are extracted and described using vision models, capturing what's shown on screen.</p>\par
+            </div>\par
+          </div>\par
+\par
+          <div class="how-step">\par
+            <div class="how-num">4</div>\par
+            <div>\par
+              <h4>🧠 LLM Reasoning</h4>\par
+              <p>Your question is answered by an LLM with full context of the transcript + visual captions, finding the\par
+                most relevant clip.</p>\par
+            </div>\par
+          </div>\par
+\par
+          <div class="how-step">\par
+            <div class="how-num">5</div>\par
+            <div>\par
+              <h4>📊 Summaries & Insights</h4>\par
+              <p>Get video summaries, transcript key points, action items, and keywords — all AI-generated instantly.\par
+              </p>\par
+            </div>\par
+          </div>\par
+        </div>\par
+      </div>\par
+    </div>\par
+\par
+    <!-- ════════════════════════════════════════\par
+         FOOTER\par
+    ════════════════════════════════════════ -->\par
+    <footer class="footer">\par
+      <p>\par
+        VideoQA · Multimodal AI · Built with 🧠 &amp; ☕ ·\par
+        <a href="javascript:void(0)" aria-label="View project on GitHub">View on GitHub</a>\par
+      </p>\par
+    </footer>\par
+\par
+  </div>\par
+\par
+  <!-- ── Toast Container ─────────────────────────────────── -->\par
+  <div class="toast-container" id="toast-container" aria-live="assertive" aria-atomic="true"></div>\par
+\par
+  <!-- ── Scripts ─────────────────────────────────────────── -->\par
+  <script src="mock.js"></script>\par
+  <script src="api.js"></script>\par
+  <script src="app.js"></script>\par
+\par
+</body>\par
+\par
+</html>\par\par}
+
+{\b\f0\fs28 style.css\par}
+{\f1\fs20 /* =========================================================\par
+   VideoQA – Premium Design System CSS\par
+   Dark-first, glassmorphism, responsive, animated\par
+   ========================================================= */\par
+\par
+/* ── Google Fonts ──────────────────────────────────────── */\par
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');\par
+\par
+/* ── CSS Custom Properties ─────────────────────────────── */\par
+:root \{\par
+  /* Spacing */\par
+  --space-1: 4px;\par
+  --space-2: 8px;\par
+  --space-3: 12px;\par
+  --space-4: 16px;\par
+  --space-5: 20px;\par
+  --space-6: 24px;\par
+  --space-8: 32px;\par
+  --space-10: 40px;\par
+  --space-12: 48px;\par
+\par
+  /* Radius */\par
+  --radius-sm: 8px;\par
+  --radius-md: 14px;\par
+  --radius-lg: 20px;\par
+  --radius-xl: 28px;\par
+\par
+  /* Transitions */\par
+  --ease: cubic-bezier(0.4, 0, 0.2, 1);\par
+  --transition: 0.22s var(--ease);\par
+  --transition-slow: 0.45s var(--ease);\par
+\par
+  /* Typography */\par
+  --font-sans: 'Inter', system-ui, sans-serif;\par
+  --font-mono: 'JetBrains Mono', 'Fira Code', monospace;\par
+\par
+  /* Shadows */\par
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.25);\par
+  --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.35);\par
+  --shadow-lg: 0 20px 48px rgba(0, 0, 0, 0.4);\par
+  --shadow-glow: 0 0 32px rgba(102, 126, 234, 0.3);\par
+\}\par
+\par
+/* ── Dark Theme (default) ──────────────────────────────── */\par
+[data-theme="dark"] \{\par
+  --bg-base: #0b0e1a;\par
+  --bg-surface: #111425;\par
+  --bg-card: rgba(20, 25, 50, 0.7);\par
+  --bg-card-hover: rgba(30, 37, 70, 0.85);\par
+  --bg-input: rgba(15, 20, 42, 0.8);\par
+  --bg-chip: rgba(102, 126, 234, 0.15);\par
+  --border: rgba(255, 255, 255, 0.08);\par
+  --border-accent: rgba(102, 126, 234, 0.4);\par
+\par
+  --text-primary: #f0f2ff;\par
+  --text-secondary: #8b91b8;\par
+  --text-muted: #555c80;\par
+  --text-accent: #818cf8;\par
+\par
+  --accent: #667eea;\par
+  --accent-2: #764ba2;\par
+  --accent-light: #a5b4fc;\par
+  --success: #34d399;\par
+  --warning: #fbbf24;\par
+  --error: #f87171;\par
+\par
+  --gradient-bg: linear-gradient(135deg, #0b0e1a 0%, #0f1229 40%, #13112a 70%, #0b0e1a 100%);\par
+  --gradient-accent: linear-gradient(135deg, #667eea 0%, #764ba2 100%);\par
+  --gradient-card: linear-gradient(145deg, rgba(30, 37, 80, 0.5) 0%, rgba(15, 18, 45, 0.5) 100%);\par
+\par
+  --glass-bg: rgba(15, 18, 40, 0.65);\par
+  --glass-border: rgba(255, 255, 255, 0.08);\par
+  --glass-blur: blur(20px);\par
+\}\par
+\par
+/* ── Light Theme ───────────────────────────────────────── */\par
+[data-theme="light"] \{\par
+  --bg-base: #f0f2ff;\par
+  --bg-surface: #ffffff;\par
+  --bg-card: rgba(255, 255, 255, 0.85);\par
+  --bg-card-hover: rgba(245, 247, 255, 0.95);\par
+  --bg-input: rgba(245, 247, 255, 0.9);\par
+  --bg-chip: rgba(102, 126, 234, 0.1);\par
+  --border: rgba(0, 0, 0, 0.08);\par
+  --border-accent: rgba(102, 126, 234, 0.35);\par
+\par
+  --text-primary: #1a1d35;\par
+  --text-secondary: #4b5080;\par
+  --text-muted: #9098c0;\par
+  --text-accent: #5b6ee8;\par
+\par
+  --accent: #667eea;\par
+  --accent-2: #764ba2;\par
+  --accent-light: #818cf8;\par
+  --success: #059669;\par
+  --warning: #d97706;\par
+  --error: #dc2626;\par
+\par
+  --gradient-bg: linear-gradient(135deg, #eef0fc 0%, #f5f0ff 50%, #edf2ff 100%);\par
+  --gradient-accent: linear-gradient(135deg, #667eea 0%, #764ba2 100%);\par
+  --gradient-card: linear-gradient(145deg, rgba(255, 255, 255, 0.9) 0%, rgba(240, 242, 255, 0.8) 100%);\par
+\par
+  --glass-bg: rgba(255, 255, 255, 0.75);\par
+  --glass-border: rgba(102, 126, 234, 0.15);\par
+  --glass-blur: blur(16px);\par
+\}\par
+\par
+/* ── Reset & Base ──────────────────────────────────────── */\par
+*,\par
+*::before,\par
+*::after \{\par
+  box-sizing: border-box;\par
+  margin: 0;\par
+  padding: 0;\par
+\}\par
+\par
+html \{\par
+  scroll-behavior: smooth;\par
+\}\par
+\par
+body \{\par
+  font-family: var(--font-sans);\par
+  background: var(--gradient-bg);\par
+  background-attachment: fixed;\par
+  color: var(--text-primary);\par
+  min-height: 100vh;\par
+  line-height: 1.6;\par
+  transition: background var(--transition-slow), color var(--transition);\par
+  overflow-x: hidden;\par
+\}\par
+\par
+/* ── Animated Background Orbs ──────────────────────────── */\par
+.bg-orbs \{\par
+  position: fixed;\par
+  inset: 0;\par
+  pointer-events: none;\par
+  z-index: 0;\par
+  overflow: hidden;\par
+\}\par
+\par
+.orb \{\par
+  position: absolute;\par
+  border-radius: 50%;\par
+  filter: blur(80px);\par
+  opacity: 0.18;\par
+  animation: orbFloat 12s ease-in-out infinite;\par
+\}\par
+\par
+.orb-1 \{\par
+  width: 600px;\par
+  height: 600px;\par
+  background: radial-gradient(circle, #667eea, transparent);\par
+  top: -200px;\par
+  left: -150px;\par
+  animation-delay: 0s;\par
+\}\par
+\par
+.orb-2 \{\par
+  width: 500px;\par
+  height: 500px;\par
+  background: radial-gradient(circle, #764ba2, transparent);\par
+  bottom: -150px;\par
+  right: -100px;\par
+  animation-delay: -4s;\par
+\}\par
+\par
+.orb-3 \{\par
+  width: 400px;\par
+  height: 400px;\par
+  background: radial-gradient(circle, #06b6d4, transparent);\par
+  top: 40%;\par
+  right: 20%;\par
+  animation-delay: -8s;\par
+\}\par
+\par
+@keyframes orbFloat \{\par
+\par
+  0%,\par
+  100% \{\par
+    transform: translate(0, 0) scale(1);\par
+  \}\par
+\par
+  33% \{\par
+    transform: translate(30px, -20px) scale(1.05);\par
+  \}\par
+\par
+  66% \{\par
+    transform: translate(-20px, 30px) scale(0.95);\par
+  \}\par
+\}\par
+\par
+/* ── Glass Card Utility ────────────────────────────────── */\par
+.glass \{\par
+  background: var(--glass-bg);\par
+  backdrop-filter: var(--glass-blur);\par
+  -webkit-backdrop-filter: var(--glass-blur);\par
+  border: 1px solid var(--glass-border);\par
+  border-radius: var(--radius-lg);\par
+\}\par
+\par
+.glass-sm \{\par
+  border-radius: var(--radius-md);\par
+\}\par
+\par
+/* ── Scrollbar ─────────────────────────────────────────── */\par
+::-webkit-scrollbar \{\par
+  width: 6px;\par
+  height: 6px;\par
+\}\par
+\par
+::-webkit-scrollbar-track \{\par
+  background: transparent;\par
+\}\par
+\par
+::-webkit-scrollbar-thumb \{\par
+  background: var(--border-accent);\par
+  border-radius: 99px;\par
+\}\par
+\par
+/* ── Layout Container ──────────────────────────────────── */\par
+#app \{\par
+  position: relative;\par
+  z-index: 1;\par
+  min-height: 100vh;\par
+  display: flex;\par
+  flex-direction: column;\par
+\}\par
+\par
+/* ═══════════════════════════════════════════\par
+   HEADER\par
+═══════════════════════════════════════════ */\par
+.header \{\par
+  position: sticky;\par
+  top: 0;\par
+  z-index: 100;\par
+  background: var(--glass-bg);\par
+  backdrop-filter: var(--glass-blur);\par
+  -webkit-backdrop-filter: var(--glass-blur);\par
+  border-bottom: 1px solid var(--glass-border);\par
+  padding: 0 var(--space-6);\par
+  height: 64px;\par
+  display: flex;\par
+  align-items: center;\par
+  justify-content: space-between;\par
+  gap: var(--space-4);\par
+  transition: background var(--transition);\par
+\}\par
+\par
+.header-logo \{\par
+  display: flex;\par
+  align-items: center;\par
+  gap: var(--space-3);\par
+  text-decoration: none;\par
+  flex-shrink: 0;\par
+\}\par
+\par
+.logo-icon \{\par
+  width: 38px;\par
+  height: 38px;\par
+  background: var(--gradient-accent);\par
+  border-radius: var(--radius-sm);\par
+  display: flex;\par
+  align-items: center;\par
+  justify-content: center;\par
+  font-size: 18px;\par
+  box-shadow: var(--shadow-glow);\par
+\}\par
+\par
+.logo-text \{\par
+  font-size: 18px;\par
+  font-weight: 800;\par
+  background: var(--gradient-accent);\par
+  -webkit-background-clip: text;\par
+  -webkit-text-fill-color: transparent;\par
+  background-clip: text;\par
+  letter-spacing: -0.5px;\par
+\}\par
+\par
+/* Tab bar inside header */\par
+.header-tabs \{\par
+  display: flex;\par
+  align-items: center;\par
+  gap: var(--space-1);\par
+  background: rgba(0, 0, 0, 0.25);\par
+  border: 1px solid var(--border);\par
+  border-radius: var(--radius-xl);\par
+  padding: 4px;\par
+  flex-shrink: 0;\par
+\}\par
+\par
+[data-theme="light"] .header-tabs \{\par
+  background: rgba(102, 126, 234, 0.08);\par
+\}\par
+\par
+.tab-btn \{\par
+  padding: 6px 18px;\par
+  border: none;\par
+  background: none;\par
+  cursor: pointer;\par
+  color: var(--text-secondary);\par
+  font-size: 13px;\par
+  font-weight: 600;\par
+  font-family: var(--font-sans);\par
+  border-radius: 20px;\par
+  transition: all var(--transition);\par
+  white-space: nowrap;\par
+\}\par
+\par
+.tab-btn:hover \{\par
+  color: var(--text-primary);\par
+  background: rgba(255, 255, 255, 0.06);\par
+\}\par
+\par
+.tab-btn.active \{\par
+  background: var(--gradient-accent);\par
+  color: #fff;\par
+  box-shadow: 0 2px 12px rgba(102, 126, 234, 0.4);\par
+\}\par
+\par
+/* Header actions */\par
+.header-actions \{\par
+  display: flex;\par
+  align-items: center;\par
+  gap: var(--space-2);\par
+  flex-shrink: 0;\par
+\}\par
+\par
+.btn-ghost \{\par
+  padding: 7px 14px;\par
+  background: none;\par
+  border: 1px solid var(--border);\par
+  color: var(--text-secondary);\par
+  border-radius: var(--radius-sm);\par
+  font-size: 13px;\par
+  font-weight: 500;\par
+  font-family: var(--font-sans);\par
+  cursor: pointer;\par
+  transition: all var(--transition);\par
+  display: flex;\par
+  align-items: center;\par
+  gap: var(--space-2);\par
+\}\par
+\par
+.btn-ghost:hover \{\par
+  border-color: var(--border-accent);\par
+  color: var(--text-primary);\par
+  background: rgba(102, 126, 234, 0.1);\par
+\}\par
+\par
+.btn-icon \{\par
+  width: 36px;\par
+  height: 36px;\par
+  background: none;\par
+  border: 1px solid var(--border);\par
+  color: var(--text-secondary);\par
+  border-radius: var(--radius-sm);\par
+  cursor: pointer;\par
+  transition: all var(--transition);\par
+  display: flex;\par
+  align-items: center;\par
+  justify-content: center;\par
+  font-size: 16px;\par
+\}\par
+\par
+.btn-icon:hover \{\par
+  border-color: var(--border-accent);\par
+  color: var(--text-primary);\par
+  background: rgba(102, 126, 234, 0.1);\par
+\}\par
+\par
+/* ═══════════════════════════════════════════\par
+   HERO\par
+═══════════════════════════════════════════ */\par
+.hero \{\par
+  text-align: center;\par
+  padding: var(--space-12) var(--space-6) var(--space-8);\par
+\}\par
+\par
+.hero-badge \{\par
+  display: inline-flex;\par
+  align-items: center;\par
+  gap: var(--space-2);\par
+  background: rgba(102, 126, 234, 0.12);\par
+  border: 1px solid rgba(102, 126, 234, 0.25);\par
+  border-radius: var(--radius-xl);\par
+  padding: 4px 14px;\par
+  font-size: 12px;\par
+  font-weight: 600;\par
+  color: var(--accent-light);\par
+  margin-bottom: var(--space-5);\par
+  letter-spacing: 0.5px;\par
+  text-transform: uppercase;\par
+\}\par
+\par
+.hero-badge .dot \{\par
+  width: 6px;\par
+  height: 6px;\par
+  border-radius: 50%;\par
+  background: var(--success);\par
+  animation: pulse 2s infinite;\par
+\}\par
+\par
+@keyframes pulse \{\par
+\par
+  0%,\par
+  100% \{\par
+    opacity: 1;\par
+    transform: scale(1);\par
+  \}\par
+\par
+  50% \{\par
+    opacity: 0.5;\par
+    transform: scale(1.3);\par
+  \}\par
+\}\par
+\par
+.hero h1 \{\par
+  font-size: clamp(28px, 5vw, 52px);\par
+  font-weight: 800;\par
+  line-height: 1.2;\par
+  letter-spacing: -1.5px;\par
+  background: linear-gradient(135deg, var(--text-primary) 0%, var(--accent-light) 100%);\par
+  -webkit-background-clip: text;\par
+  -webkit-text-fill-color: transparent;\par
+  background-clip: text;\par
+  margin-bottom: var(--space-4);\par
+\}\par
+\par
+.hero p \{\par
+  font-size: clamp(14px, 2vw, 18px);\par
+  color: var(--text-secondary);\par
+  max-width: 560px;\par
+  margin: 0 auto var(--space-6);\par
+\}\par
+\par
+.feature-chips \{\par
+  display: flex;\par
+  flex-wrap: wrap;\par
+  justify-content: center;\par
+  gap: var(--space-2);\par
+\}\par
+\par
+.chip \{\par
+  padding: 5px 14px;\par
+  background: var(--bg-chip);\par
+  border: 1px solid var(--border-accent);\par
+  border-radius: var(--radius-xl);\par
+  font-size: 12px;\par
+  font-weight: 600;\par
+  color: var(--accent-light);\par
+  letter-spacing: 0.3px;\par
+  transition: all var(--transition);\par
+\}\par
+\par
+.chip:hover \{\par
+  background: rgba(102, 126, 234, 0.25);\par
+  transform: translateY(-2px);\par
+\}\par
+\par
+.chip .ci \{\par
+  margin-right: 4px;\par
+\}\par
+\par
+/* ═══════════════════════════════════════════\par
+   MAIN LAYOUT\par
+═══════════════════════════════════════════ */\par
+.main-layout \{\par
+  flex: 1;\par
+  display: grid;\par
+  grid-template-columns: 1fr 300px;\par
+  gap: var(--space-6);\par
+  padding: 0 var(--space-6) var(--space-12);\par
+  max-width: 1300px;\par
+  margin: 0 auto;\par
+  width: 100%;\par
+\}\par
+\par
+/* ═══════════════════════════════════════════\par
+   UPLOAD PANEL\par
+═══════════════════════════════════════════ */\par
+.upload-panel \{\par
+  grid-column: 1 / -1;\par
+  padding: var(--space-8);\par
+\}\par
+\par
+.drop-zone \{\par
+  border: 2px dashed var(--border-accent);\par
+  border-radius: var(--radius-lg);\par
+  padding: var(--space-10) var(--space-6);\par
+  text-align: center;\par
+  cursor: pointer;\par
+  transition: all var(--transition);\par
+  position: relative;\par
+  overflow: hidden;\par
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.04) 0%, rgba(118, 75, 162, 0.04) 100%);\par
+\}\par
+\par
+.drop-zone:hover,\par
+.drop-zone.drag-over \{\par
+  border-color: var(--accent);\par
+  background: rgba(102, 126, 234, 0.08);\par
+  transform: translateY(-2px);\par
+  box-shadow: var(--shadow-glow);\par
+\}\par
+\par
+.drop-zone input[type="file"] \{\par
+  display: none;\par
+\}\par
+\par
+.drop-icon \{\par
+  font-size: 48px;\par
+  margin-bottom: var(--space-4);\par
+  background: var(--gradient-accent);\par
+  -webkit-background-clip: text;\par
+  -webkit-text-fill-color: transparent;\par
+  background-clip: text;\par
+  display: block;\par
+\}\par
+\par
+.drop-zone h3 \{\par
+  font-size: 18px;\par
+  font-weight: 700;\par
+  margin-bottom: var(--space-2);\par
+\}\par
+\par
+.drop-zone p \{\par
+  color: var(--text-secondary);\par
+  font-size: 14px;\par
+\}\par
+\par
+.drop-formats \{\par
+  margin-top: var(--space-3);\par
+  display: flex;\par
+  justify-content: center;\par
+  gap: var(--space-2);\par
+  flex-wrap: wrap;\par
+\}\par
+\par
+.fmt-badge \{\par
+  padding: 3px 10px;\par
+  border: 1px solid var(--border);\par
+  border-radius: var(--radius-xl);\par
+  font-size: 11px;\par
+  font-weight: 600;\par
+  color: var(--text-muted);\par
+  font-family: var(--font-mono);\par
+\}\par
+\par
+/* File info bar */\par
+.file-info \{\par
+  display: none;\par
+  margin-top: var(--space-4);\par
+  padding: var(--space-4) var(--space-5);\par
+  background: var(--bg-input);\par
+  border: 1px solid var(--border);\par
+  border-radius: var(--radius-md);\par
+  align-items: center;\par
+  gap: var(--space-4);\par
+\}\par
+\par
+.file-info.show \{\par
+  display: flex;\par
+\}\par
+\par
+.file-icon \{\par
+  font-size: 28px;\par
+  flex-shrink: 0;\par
+\}\par
+\par
+.file-meta \{\par
+  flex: 1;\par
+\}\par
+\par
+.file-name \{\par
+  font-weight: 700;\par
+  font-size: 14px;\par
+\}\par
+\par
+.file-detail \{\par
+  font-size: 12px;\par
+  color: var(--text-secondary);\par
+  margin-top: 2px;\par
+\}\par
+\par
+.file-remove \{\par
+  background: none;\par
+  border: none;\par
+  color: var(--text-muted);\par
+  font-size: 18px;\par
+  cursor: pointer;\par
+  padding: var(--space-2);\par
+  transition: color var(--transition);\par
+\}\par
+\par
+.file-remove:hover \{\par
+  color: var(--error);\par
+\}\par
+\par
+/* Video preview */\par
+.video-preview-wrap \{\par
+  display: none;\par
+  margin-top: var(--space-5);\par
+  border-radius: var(--radius-md);\par
+  overflow: hidden;\par
+  border: 1px solid var(--border);\par
+  background: #000;\par
+  max-height: 300px;\par
+\}\par
+\par
+.video-preview-wrap.show \{\par
+  display: block;\par
+\}\par
+\par
+.video-preview-wrap video \{\par
+  width: 100%;\par
+  max-height: 300px;\par
+  display: block;\par
+\}\par
+\par
+/* Controls row */\par
+.upload-controls \{\par
+  margin-top: var(--space-5);\par
+  display: flex;\par
+  gap: var(--space-4);\par
+  align-items: flex-end;\par
+  flex-wrap: wrap;\par
+\}\par
+\par
+.form-group \{\par
+  display: flex;\par
+  flex-direction: column;\par
+  gap: var(--space-2);\par
+\}\par
+\par
+.form-label \{\par
+  font-size: 12px;\par
+  font-weight: 600;\par
+  color: var(--text-secondary);\par
+  text-transform: uppercase;\par
+  letter-spacing: 0.5px;\par
+\}\par
+\par
+.select-styled \{\par
+  appearance: none;\par
+  background: var(--bg-input);\par
+  border: 1px solid var(--border);\par
+  border-radius: var(--radius-sm);\par
+  color: var(--text-primary);\par
+  padding: 10px 36px 10px 14px;\par
+  font-size: 14px;\par
+  font-family: var(--font-sans);\par
+  font-weight: 500;\par
+  cursor: pointer;\par
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%238b91b8' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");\par
+  background-repeat: no-repeat;\par
+  background-position: right 10px center;\par
+  background-size: 20px;\par
+  transition: border-color var(--transition);\par
+  min-width: 160px;\par
+\}\par
+\par
+.select-styled:focus \{\par
+  outline: none;\par
+  border-color: var(--accent);\par
+\}\par
+\par
+/* Mode toggle */\par
+.mode-toggle \{\par
+  display: flex;\par
+  gap: 2px;\par
+  background: var(--bg-input);\par
+  border: 1px solid var(--border);\par
+  border-radius: var(--radius-sm);\par
+  padding: 3px;\par
+\}\par
+\par
+.mode-opt \{\par
+  padding: 8px 14px;\par
+  border: none;\par
+  background: none;\par
+  color: var(--text-secondary);\par
+  border-radius: 8px;\par
+  font-size: 13px;\par
+  font-weight: 500;\par
+  font-family: var(--font-sans);\par
+  cursor: pointer;\par
+  transition: all var(--transition);\par
+  white-space: nowrap;\par
+\}\par
+\par
+.mode-opt.active \{\par
+  background: var(--gradient-accent);\par
+  color: #fff;\par
+  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.4);\par
+\}\par
+\par
+.mode-opt:hover:not(.active) \{\par
+  color: var(--text-primary);\par
+  background: rgba(255, 255, 255, 0.05);\par
+\}\par
+\par
+/* Primary button */\par
+.btn-primary \{\par
+  padding: 11px 28px;\par
+  background: var(--gradient-accent);\par
+  color: #fff;\par
+  border: none;\par
+  border-radius: var(--radius-sm);\par
+  font-size: 14px;\par
+  font-weight: 700;\par
+  font-family: var(--font-sans);\par
+  cursor: pointer;\par
+  transition: all var(--transition);\par
+  display: flex;\par
+  align-items: center;\par
+  gap: var(--space-2);\par
+  box-shadow: 0 4px 20px rgba(102, 126, 234, 0.35);\par
+  white-space: nowrap;\par
+  margin-left: auto;\par
+\}\par
+\par
+.btn-primary:hover \{\par
+  transform: translateY(-2px);\par
+  box-shadow: 0 8px 28px rgba(102, 126, 234, 0.5);\par
+\}\par
+\par
+.btn-primary:active \{\par
+  transform: translateY(0);\par
+\}\par
+\par
+.btn-primary:disabled \{\par
+  opacity: 0.45;\par
+  cursor: not-allowed;\par
+  transform: none;\par
+  box-shadow: none;\par
+\}\par
+\par
+/* Secondary button */\par
+.btn-secondary \{\par
+  padding: 9px 18px;\par
+  background: rgba(102, 126, 234, 0.1);\par
+  color: var(--accent-light);\par
+  border: 1px solid var(--border-accent);\par
+  border-radius: var(--radius-sm);\par
+  font-size: 13px;\par
+  font-weight: 600;\par
+  font-family: var(--font-sans);\par
+  cursor: pointer;\par
+  transition: all var(--transition);\par
+  display: inline-flex;\par
+  align-items: center;\par
+  gap: var(--space-2);\par
+  white-space: nowrap;\par
+\}\par
+\par
+.btn-secondary:hover \{\par
+  background: rgba(102, 126, 234, 0.2);\par
+  transform: translateY(-1px);\par
+\}\par
+\par
+.btn-secondary:disabled \{\par
+  opacity: 0.4;\par
+  cursor: not-allowed;\par
+  transform: none;\par
+\}\par
+\par
+/* ═══════════════════════════════════════════\par
+   PROGRESS TIMELINE\par
+═══════════════════════════════════════════ */\par
+.progress-panel \{\par
+  display: none;\par
+  margin-top: var(--space-6);\par
+  padding: var(--space-6);\par
+  border-radius: var(--radius-md);\par
+  background: var(--bg-input);\par
+  border: 1px solid var(--border-accent);\par
+\}\par
+\par
+.progress-panel.show \{\par
+  display: block;\par
+\}\par
+\par
+.progress-header \{\par
+  display: flex;\par
+  justify-content: space-between;\par
+  align-items: center;\par
+  margin-bottom: var(--space-4);\par
+\}\par
+\par
+.progress-title \{\par
+  font-size: 14px;\par
+  font-weight: 700;\par
+\}\par
+\par
+.progress-pct \{\par
+  font-size: 13px;\par
+  font-weight: 700;\par
+  color: var(--accent-light);\par
+  font-family: var(--font-mono);\par
+\}\par
+\par
+.progress-bar-outer \{\par
+  height: 6px;\par
+  background: var(--border);\par
+  border-radius: 99px;\par
+  margin-bottom: var(--space-5);\par
+  overflow: hidden;\par
+\}\par
+\par
+.progress-bar-inner \{\par
+  height: 100%;\par
+  border-radius: 99px;\par
+  background: var(--gradient-accent);\par
+  transition: width 0.6s var(--ease);\par
+  box-shadow: 0 0 12px rgba(102, 126, 234, 0.5);\par
+  width: 0%;\par
+\}\par
+\par
+.progress-steps \{\par
+  display: flex;\par
+  flex-direction: column;\par
+  gap: var(--space-3);\par
+\}\par
+\par
+.progress-step \{\par
+  display: flex;\par
+  align-items: center;\par
+  gap: var(--space-3);\par
+\}\par
+\par
+.step-icon \{\par
+  width: 28px;\par
+  height: 28px;\par
+  border-radius: 50%;\par
+  flex-shrink: 0;\par
+  display: flex;\par
+  align-items: center;\par
+  justify-content: center;\par
+  font-size: 12px;\par
+  border: 2px solid var(--border);\par
+  color: var(--text-muted);\par
+  transition: all var(--transition);\par
+\}\par
+\par
+.step-icon.active \{\par
+  border-color: var(--accent);\par
+  color: var(--accent);\par
+  animation: spinStep 1s linear infinite;\par
+\}\par
+\par
+.step-icon.done \{\par
+  border-color: var(--success);\par
+  background: var(--success);\par
+  color: #fff;\par
+\}\par
+\par
+.step-icon.done::after \{\par
+  content: '✓';\par
+\}\par
+\par
+@keyframes spinStep \{\par
+  to \{\par
+    transform: rotate(360deg);\par
+  \}\par
+\}\par
+\par
+.step-label \{\par
+  font-size: 13px;\par
+  font-weight: 500;\par
+  color: var(--text-secondary);\par
+  transition: color var(--transition);\par
+\}\par
+\par
+.step-label.active \{\par
+  color: var(--text-primary);\par
+\}\par
+\par
+/* ═══════════════════════════════════════════\par
+   CONTENT AREA + SIDEBAR LAYOUT\par
+═══════════════════════════════════════════ */\par
+.content-area \{\par
+  min-width: 0;\par
+\}\par
+\par
+.sidebar \{\par
+  position: relative;\par
+\}\par
+\par
+/* Tab panels */\par
+.tab-panel \{\par
+  display: none;\par
+  animation: fadeUp 0.3s var(--ease);\par
+\}\par
+\par
+.tab-panel.active \{\par
+  display: block;\par
+\}\par
+\par
+@keyframes fadeUp \{\par
+  from \{\par
+    opacity: 0;\par
+    transform: translateY(12px);\par
+  \}\par
+\par
+  to \{\par
+    opacity: 1;\par
+    transform: translateY(0);\par
+  \}\par
+\}\par
+\par
+/* ═══════════════════════════════════════════\par
+   ASK TAB\par
+═══════════════════════════════════════════ */\par
+.qa-input-card \{\par
+  padding: var(--space-6);\par
+  margin-bottom: var(--space-4);\par
+\}\par
+\par
+.qa-input-card h2 \{\par
+  font-size: 17px;\par
+  font-weight: 700;\par
+  margin-bottom: var(--space-4);\par
+\}\par
+\par
+.question-area \{\par
+  width: 100%;\par
+  background: var(--bg-input);\par
+  border: 1px solid var(--border);\par
+  border-radius: var(--radius-md);\par
+  padding: var(--space-4);\par
+  color: var(--text-primary);\par
+  font-family: var(--font-sans);\par
+  font-size: 14px;\par
+  line-height: 1.7;\par
+  resize: vertical;\par
+  min-height: 90px;\par
+  transition: border-color var(--transition);\par
+\}\par
+\par
+.question-area:focus \{\par
+  outline: none;\par
+  border-color: var(--accent);\par
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.15);\par
+\}\par
+\par
+.question-area::placeholder \{\par
+  color: var(--text-muted);\par
+\}\par
+\par
+.qa-actions \{\par
+  display: flex;\par
+  gap: var(--space-2);\par
+  flex-wrap: wrap;\par
+  margin-top: var(--space-3);\par
+\}\par
+\par
+/* Answer card */\par
+.result-card \{\par
+  padding: var(--space-6);\par
+  margin-bottom: var(--space-4);\par
+  animation: fadeUp 0.35s var(--ease);\par
+\}\par
+\par
+.result-card-header \{\par
+  display: flex;\par
+  align-items: center;\par
+  justify-content: space-between;\par
+  margin-bottom: var(--space-4);\par
+  gap: var(--space-3);\par
+\}\par
+\par
+.result-label \{\par
+  display: flex;\par
+  align-items: center;\par
+  gap: var(--space-2);\par
+  font-size: 11px;\par
+  font-weight: 700;\par
+  text-transform: uppercase;\par
+  letter-spacing: 0.8px;\par
+  color: var(--text-secondary);\par
+\}\par
+\par
+.result-label .dot-accent \{\par
+  width: 8px;\par
+  height: 8px;\par
+  border-radius: 50%;\par
+  background: var(--gradient-accent);\par
+\}\par
+\par
+.result-actions \{\par
+  display: flex;\par
+  gap: var(--space-2);\par
+\}\par
+\par
+.answer-text \{\par
+  font-size: 15px;\par
+  line-height: 1.8;\par
+  color: var(--text-primary);\par
+  white-space: pre-wrap;\par
+\}\par
+\par
+.answer-text strong \{\par
+  color: var(--accent-light);\par
+\}\par
+\par
+.confidence-badge \{\par
+  display: inline-flex;\par
+  align-items: center;\par
+  gap: var(--space-2);\par
+  margin-top: var(--space-4);\par
+  padding: 6px 14px;\par
+  background: rgba(52, 211, 153, 0.1);\par
+  border: 1px solid rgba(52, 211, 153, 0.25);\par
+  border-radius: var(--radius-xl);\par
+  font-size: 12px;\par
+  font-weight: 600;\par
+  color: var(--success);\par
+\}\par
+\par
+.confidence-badge::before \{\par
+  content: '✦';\par
+\}\par
+\par
+/* Clip card */\par
+.clip-card \{\par
+  padding: var(--space-6);\par
+  margin-bottom: var(--space-4);\par
+\}\par
+\par
+.clip-player-wrap \{\par
+  border-radius: var(--radius-md);\par
+  overflow: hidden;\par
+  background: #000;\par
+  margin-bottom: var(--space-4);\par
+  border: 1px solid var(--border);\par
+  min-height: 160px;\par
+  display: flex;\par
+  align-items: center;\par
+  justify-content: center;\par
+\}\par
+\par
+.clip-placeholder \{\par
+  display: flex;\par
+  flex-direction: column;\par
+  align-items: center;\par
+  gap: var(--space-3);\par
+  color: var(--text-muted);\par
+  padding: var(--space-8);\par
+\}\par
+\par
+.clip-placeholder span \{\par
+  font-size: 36px;\par
+\}\par
+\par
+.clip-placeholder p \{\par
+  font-size: 13px;\par
+\}\par
+\par
+.clip-label \{\par
+  font-size: 13px;\par
+  font-weight: 600;\par
+  color: var(--accent-light);\par
+  margin-bottom: var(--space-3);\par
+\}\par
+\par
+.clip-actions \{\par
+  display: flex;\par
+  gap: var(--space-2);\par
+  flex-wrap: wrap;\par
+\}\par
+\par
+/* Evidence collapsible */\par
+.evidence-card \{\par
+  padding: var(--space-4) var(--space-5);\par
+  margin-bottom: var(--space-4);\par
+\}\par
+\par
+.evidence-toggle \{\par
+  display: flex;\par
+  align-items: center;\par
+  justify-content: space-between;\par
+  cursor: pointer;\par
+  user-select: none;\par
+\}\par
+\par
+.evidence-toggle h4 \{\par
+  font-size: 13px;\par
+  font-weight: 700;\par
+  display: flex;\par
+  align-items: center;\par
+  gap: var(--space-2);\par
+\}\par
+\par
+.toggle-arrow \{\par
+  font-size: 12px;\par
+  color: var(--text-muted);\par
+  transition: transform var(--transition);\par
+\}\par
+\par
+.toggle-arrow.open \{\par
+  transform: rotate(180deg);\par
+\}\par
+\par
+.evidence-body \{\par
+  display: none;\par
+  margin-top: var(--space-4);\par
+\}\par
+\par
+.evidence-body.show \{\par
+  display: block;\par
+\}\par
+\par
+.evidence-section \{\par
+  margin-bottom: var(--space-4);\par
+\}\par
+\par
+.evidence-section:last-child \{\par
+  margin-bottom: 0;\par
+\}\par
+\par
+.evidence-title \{\par
+  font-size: 11px;\par
+  font-weight: 700;\par
+  text-transform: uppercase;\par
+  letter-spacing: 0.6px;\par
+  color: var(--text-muted);\par
+  margin-bottom: var(--space-2);\par
+\}\par
+\par
+.evidence-item \{\par
+  padding: var(--space-3) var(--space-4);\par
+  margin-bottom: var(--space-2);\par
+  background: var(--bg-input);\par
+  border-left: 3px solid var(--accent);\par
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;\par
+  font-size: 13px;\par
+  line-height: 1.6;\par
+  color: var(--text-secondary);\par
+  font-style: italic;\par
+\}\par
+\par
+/* Demo state */\par
+.demo-state \{\par
+  padding: var(--space-10) var(--space-6);\par
+  text-align: center;\par
+  color: var(--text-muted);\par
+\}\par
+\par
+.demo-icon \{\par
+  font-size: 52px;\par
+  margin-bottom: var(--space-4);\par
+  display: block;\par
+\}\par
+\par
+.demo-state h3 \{\par
+  font-size: 18px;\par
+  font-weight: 700;\par
+  color: var(--text-secondary);\par
+  margin-bottom: var(--space-2);\par
+\}\par
+\par
+.demo-state p \{\par
+  font-size: 14px;\par
+  max-width: 340px;\par
+  margin: 0 auto;\par
+\}\par
+\par
+/* ═══════════════════════════════════════════\par
+   SUMMARIZE TAB\par
+═══════════════════════════════════════════ */\par
+.summarize-grid \{\par
+  display: grid;\par
+  grid-template-columns: 1fr 1fr;\par
+  gap: var(--space-4);\par
+  margin-bottom: var(--space-4);\par
+\}\par
+\par
+@media (max-width: 900px) \{\par
+  .summarize-grid \{\par
+    grid-template-columns: 1fr;\par
+  \}\par
+\}\par
+\par
+.summarize-section \{\par
+  padding: var(--space-6);\par
+\}\par
+\par
+.summarize-section h3 \{\par
+  font-size: 16px;\par
+  font-weight: 700;\par
+  margin-bottom: var(--space-4);\par
+  display: flex;\par
+  align-items: center;\par
+  gap: var(--space-2);\par
+\}\par
+\par
+.summary-toggle \{\par
+  display: flex;\par
+  gap: 2px;\par
+  background: var(--bg-input);\par
+  border: 1px solid var(--border);\par
+  border-radius: var(--radius-sm);\par
+  padding: 3px;\par
+  margin-bottom: var(--space-4);\par
+\}\par
+\par
+.sum-opt \{\par
+  flex: 1;\par
+  padding: 7px 10px;\par
+  border: none;\par
+  background: none;\par
+  color: var(--text-secondary);\par
+  border-radius: 8px;\par
+  font-size: 12px;\par
+  font-weight: 600;\par
+  font-family: var(--font-sans);\par
+  cursor: pointer;\par
+  transition: all var(--transition);\par
+  text-align: center;\par
+\}\par
+\par
+.sum-opt.active \{\par
+  background: var(--gradient-accent);\par
+  color: #fff;\par
+\}\par
+\par
+.sum-opt:hover:not(.active) \{\par
+  color: var(--text-primary);\par
+\}\par
+\par
+.summary-output \{\par
+  min-height: 80px;\par
+  font-size: 14px;\par
+  line-height: 1.8;\par
+  color: var(--text-secondary);\par
+\}\par
+\par
+.summary-bullet \{\par
+  display: flex;\par
+  gap: var(--space-3);\par
+  margin-bottom: var(--space-3);\par
+  align-items: flex-start;\par
+\}\par
+\par
+.summary-bullet::before \{\par
+  content: '▸';\par
+  color: var(--accent);\par
+  flex-shrink: 0;\par
+  margin-top: 2px;\par
+\}\par
+\par
+.chapters-list \{\par
+  display: flex;\par
+  flex-direction: column;\par
+  gap: var(--space-2);\par
+\}\par
+\par
+.chapter-item \{\par
+  display: flex;\par
+  gap: var(--space-3);\par
+  align-items: center;\par
+  padding: var(--space-3) var(--space-4);\par
+  background: var(--bg-input);\par
+  border-radius: var(--radius-sm);\par
+  border: 1px solid var(--border);\par
+  transition: border-color var(--transition);\par
+\}\par
+\par
+.chapter-item:hover \{\par
+  border-color: var(--border-accent);\par
+\}\par
+\par
+.chapter-time \{\par
+  font-size: 12px;\par
+  font-weight: 700;\par
+  color: var(--accent-light);\par
+  font-family: var(--font-mono);\par
+  flex-shrink: 0;\par
+  min-width: 44px;\par
+\}\par
+\par
+.chapter-title \{\par
+  font-size: 13px;\par
+  font-weight: 500;\par
+\}\par
+\par
+.kw-chips \{\par
+  display: flex;\par
+  flex-wrap: wrap;\par
+  gap: var(--space-2);\par
+  margin-top: var(--space-3);\par
+\}\par
+\par
+.kw-chip \{\par
+  padding: 4px 12px;\par
+  background: var(--bg-chip);\par
+  border: 1px solid var(--border-accent);\par
+  border-radius: var(--radius-xl);\par
+  font-size: 12px;\par
+  font-weight: 600;\par
+  color: var(--accent-light);\par
+  cursor: default;\par
+  transition: background var(--transition);\par
+\}\par
+\par
+.kw-chip:hover \{\par
+  background: rgba(102, 126, 234, 0.25);\par
+\}\par
+\par
+.action-items \{\par
+  list-style: none;\par
+  display: flex;\par
+  flex-direction: column;\par
+  gap: var(--space-2);\par
+  margin-top: var(--space-3);\par
+\}\par
+\par
+.action-items li \{\par
+  padding: var(--space-3) var(--space-4);\par
+  background: var(--bg-input);\par
+  border-radius: var(--radius-sm);\par
+  border-left: 3px solid var(--warning);\par
+  font-size: 13px;\par
+  color: var(--text-secondary);\par
+  line-height: 1.6;\par
+\}\par
+\par
+.export-row \{\par
+  display: flex;\par
+  gap: var(--space-2);\par
+  flex-wrap: wrap;\par
+  margin-top: var(--space-4);\par
+  padding-top: var(--space-4);\par
+  border-top: 1px solid var(--border);\par
+\}\par
+\par
+/* ═══════════════════════════════════════════\par
+   TRANSCRIPT TAB\par
+═══════════════════════════════════════════ */\par
+.transcript-toolbar \{\par
+  display: flex;\par
+  gap: var(--space-3);\par
+  align-items: center;\par
+  flex-wrap: wrap;\par
+  padding: var(--space-4) var(--space-6);\par
+  border-bottom: 1px solid var(--border);\par
+  margin-bottom: 0;\par
+\}\par
+\par
+.search-wrap \{\par
+  position: relative;\par
+  flex: 1;\par
+  min-width: 180px;\par
+\}\par
+\par
+.search-wrap svg \{\par
+  position: absolute;\par
+  left: 12px;\par
+  top: 50%;\par
+  transform: translateY(-50%);\par
+  color: var(--text-muted);\par
+\}\par
+\par
+.search-input \{\par
+  width: 100%;\par
+  padding: 9px 12px 9px 36px;\par
+  background: var(--bg-input);\par
+  border: 1px solid var(--border);\par
+  border-radius: var(--radius-sm);\par
+  color: var(--text-primary);\par
+  font-size: 13px;\par
+  font-family: var(--font-sans);\par
+  transition: border-color var(--transition);\par
+\}\par
+\par
+.search-input:focus \{\par
+  outline: none;\par
+  border-color: var(--accent);\par
+\}\par
+\par
+.search-input::placeholder \{\par
+  color: var(--text-muted);\par
+\}\par
+\par
+.speaker-toggle \{\par
+  display: flex;\par
+  align-items: center;\par
+  gap: var(--space-2);\par
+  font-size: 13px;\par
+  font-weight: 500;\par
+  color: var(--text-secondary);\par
+  cursor: pointer;\par
+\}\par
+\par
+.toggle-sw \{\par
+  width: 38px;\par
+  height: 22px;\par
+  background: var(--border);\par
+  border-radius: 99px;\par
+  position: relative;\par
+  transition: background var(--transition);\par
+  cursor: pointer;\par
+\}\par
+\par
+.toggle-sw.on \{\par
+  background: var(--accent);\par
+\}\par
+\par
+.toggle-sw::after \{\par
+  content: '';\par
+  position: absolute;\par
+  top: 3px;\par
+  left: 3px;\par
+  width: 16px;\par
+  height: 16px;\par
+  background: #fff;\par
+  border-radius: 50%;\par
+  transition: left var(--transition);\par
+\}\par
+\par
+.toggle-sw.on::after \{\par
+  left: 19px;\par
+\}\par
+\par
+.transcript-body \{\par
+  padding: var(--space-4) var(--space-6);\par
+  max-height: 520px;\par
+  overflow-y: auto;\par
+\}\par
+\par
+.transcript-line \{\par
+  display: flex;\par
+  gap: var(--space-4);\par
+  padding: var(--space-3) var(--space-2);\par
+  border-radius: var(--radius-sm);\par
+  transition: background var(--transition);\par
+  margin-bottom: 2px;\par
+\}\par
+\par
+.transcript-line:hover \{\par
+  background: rgba(102, 126, 234, 0.06);\par
+\}\par
+\par
+.transcript-line.highlight \{\par
+  background: rgba(102, 126, 234, 0.12);\par
+\}\par
+\par
+.ts-time \{\par
+  font-size: 12px;\par
+  font-weight: 700;\par
+  color: var(--accent-light);\par
+  font-family: var(--font-mono);\par
+  flex-shrink: 0;\par
+  min-width: 42px;\par
+  padding-top: 2px;\par
+\}\par
+\par
+.ts-speaker \{\par
+  font-size: 12px;\par
+  font-weight: 700;\par
+  color: var(--text-muted);\par
+  flex-shrink: 0;\par
+  min-width: 80px;\par
+  padding-top: 2px;\par
+\}\par
+\par
+.ts-text \{\par
+  font-size: 14px;\par
+  line-height: 1.7;\par
+  color: var(--text-primary);\par
+\}\par
+\par
+.ts-text mark \{\par
+  background: rgba(102, 126, 234, 0.35);\par
+  color: var(--text-primary);\par
+  border-radius: 3px;\par
+  padding: 0 2px;\par
+\}\par
+\par
+/* ═══════════════════════════════════════════\par
+   HISTORY SIDEBAR\par
+═══════════════════════════════════════════ */\par
+.history-card \{\par
+  position: sticky;\par
+  top: 80px;\par
+  padding: 0;\par
+  overflow: hidden;\par
+\}\par
+\par
+.history-header \{\par
+  padding: var(--space-4) var(--space-5);\par
+  border-bottom: 1px solid var(--border);\par
+  display: flex;\par
+  align-items: center;\par
+  justify-content: space-between;\par
+\}\par
+\par
+.history-header h3 \{\par
+  font-size: 14px;\par
+  font-weight: 700;\par
+\}\par
+\par
+.history-count \{\par
+  font-size: 11px;\par
+  font-weight: 700;\par
+  background: var(--bg-chip);\par
+  color: var(--accent-light);\par
+  padding: 2px 8px;\par
+  border-radius: var(--radius-xl);\par
+\}\par
+\par
+.history-list \{\par
+  max-height: 480px;\par
+  overflow-y: auto;\par
+\}\par
+\par
+.history-item \{\par
+  padding: var(--space-4) var(--space-5);\par
+  border-bottom: 1px solid var(--border);\par
+  cursor: pointer;\par
+  transition: background var(--transition);\par
+\}\par
+\par
+.history-item:hover \{\par
+  background: rgba(102, 126, 234, 0.07);\par
+\}\par
+\par
+.history-item.active \{\par
+  background: rgba(102, 126, 234, 0.12);\par
+  border-left: 3px solid var(--accent);\par
+\}\par
+\par
+.hi-question \{\par
+  font-size: 13px;\par
+  font-weight: 600;\par
+  line-height: 1.4;\par
+  margin-bottom: 4px;\par
+  display: -webkit-box;\par
+  -webkit-line-clamp: 2;\par
+  line-clamp: 2;\par
+  -webkit-box-orient: vertical;\par
+  overflow: hidden;\par
+\}\par
+\par
+.hi-time \{\par
+  font-size: 11px;\par
+  color: var(--text-muted);\par
+\}\par
+\par
+.history-empty \{\par
+  padding: var(--space-6);\par
+  text-align: center;\par
+  color: var(--text-muted);\par
+  font-size: 13px;\par
+\}\par
+\par
+/* ═══════════════════════════════════════════\par
+   MODAL (How it works)\par
+═══════════════════════════════════════════ */\par
+.modal-overlay \{\par
+  position: fixed;\par
+  inset: 0;\par
+  z-index: 200;\par
+  background: rgba(0, 0, 0, 0.7);\par
+  backdrop-filter: blur(6px);\par
+  display: flex;\par
+  align-items: center;\par
+  justify-content: center;\par
+  padding: var(--space-6);\par
+  opacity: 0;\par
+  pointer-events: none;\par
+  transition: opacity var(--transition);\par
+\}\par
+\par
+.modal-overlay.open \{\par
+  opacity: 1;\par
+  pointer-events: all;\par
+\}\par
+\par
+.modal-box \{\par
+  max-width: 560px;\par
+  width: 100%;\par
+  padding: var(--space-8);\par
+  transform: translateY(20px);\par
+  transition: transform var(--transition);\par
+\}\par
+\par
+.modal-overlay.open .modal-box \{\par
+  transform: translateY(0);\par
+\}\par
+\par
+.modal-header \{\par
+  display: flex;\par
+  justify-content: space-between;\par
+  align-items: center;\par
+  margin-bottom: var(--space-6);\par
+\}\par
+\par
+.modal-header h2 \{\par
+  font-size: 22px;\par
+  font-weight: 800;\par
+\}\par
+\par
+.modal-close \{\par
+  font-size: 24px;\par
+  background: none;\par
+  border: none;\par
+  cursor: pointer;\par
+  color: var(--text-secondary);\par
+  transition: color var(--transition);\par
+\}\par
+\par
+.modal-close:hover \{\par
+  color: var(--text-primary);\par
+\}\par
+\par
+.how-steps \{\par
+  display: flex;\par
+  flex-direction: column;\par
+  gap: var(--space-5);\par
+\}\par
+\par
+.how-step \{\par
+  display: flex;\par
+  gap: var(--space-4);\par
+  align-items: flex-start;\par
+\}\par
+\par
+.how-num \{\par
+  width: 36px;\par
+  height: 36px;\par
+  border-radius: 50%;\par
+  flex-shrink: 0;\par
+  background: var(--gradient-accent);\par
+  color: #fff;\par
+  font-size: 15px;\par
+  font-weight: 800;\par
+  display: flex;\par
+  align-items: center;\par
+  justify-content: center;\par
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.35);\par
+\}\par
+\par
+.how-step h4 \{\par
+  font-size: 14px;\par
+  font-weight: 700;\par
+  margin-bottom: 4px;\par
+\}\par
+\par
+.how-step p \{\par
+  font-size: 13px;\par
+  color: var(--text-secondary);\par
+  line-height: 1.6;\par
+\}\par
+\par
+/* ═══════════════════════════════════════════\par
+   TOAST NOTIFICATIONS\par
+═══════════════════════════════════════════ */\par
+.toast-container \{\par
+  position: fixed;\par
+  bottom: var(--space-6);\par
+  right: var(--space-6);\par
+  z-index: 999;\par
+  display: flex;\par
+  flex-direction: column;\par
+  gap: var(--space-2);\par
+  pointer-events: none;\par
+\}\par
+\par
+.toast \{\par
+  padding: 12px 18px;\par
+  background: var(--glass-bg);\par
+  backdrop-filter: var(--glass-blur);\par
+  border: 1px solid var(--border);\par
+  border-radius: var(--radius-md);\par
+  font-size: 13px;\par
+  font-weight: 600;\par
+  color: var(--text-primary);\par
+  box-shadow: var(--shadow-md);\par
+  pointer-events: auto;\par
+  display: flex;\par
+  align-items: center;\par
+  gap: var(--space-3);\par
+  animation: toastIn 0.3s var(--ease) forwards;\par
+  max-width: 320px;\par
+\}\par
+\par
+.toast.removing \{\par
+  animation: toastOut 0.3s var(--ease) forwards;\par
+\}\par
+\par
+.toast-icon \{\par
+  font-size: 16px;\par
+  flex-shrink: 0;\par
+\}\par
+\par
+.toast.success .toast-icon::before \{\par
+  content: '✅';\par
+\}\par
+\par
+.toast.error .toast-icon::before \{\par
+  content: '❌';\par
+\}\par
+\par
+.toast.info .toast-icon::before \{\par
+  content: 'ℹ️';\par
+\}\par
+\par
+@keyframes toastIn \{\par
+  from \{\par
+    opacity: 0;\par
+    transform: translateX(30px);\par
+  \}\par
+\par
+  to \{\par
+    opacity: 1;\par
+    transform: translateX(0);\par
+  \}\par
+\}\par
+\par
+@keyframes toastOut \{\par
+  from \{\par
+    opacity: 1;\par
+    transform: translateX(0);\par
+  \}\par
+\par
+  to \{\par
+    opacity: 0;\par
+    transform: translateX(30px);\par
+  \}\par
+\}\par
+\par
+/* ═══════════════════════════════════════════\par
+   ERROR CARD\par
+═══════════════════════════════════════════ */\par
+.error-card \{\par
+  padding: var(--space-5) var(--space-6);\par
+  background: rgba(248, 113, 113, 0.1);\par
+  border: 1px solid rgba(248, 113, 113, 0.3);\par
+  border-radius: var(--radius-md);\par
+  display: flex;\par
+  align-items: flex-start;\par
+  gap: var(--space-4);\par
+  margin-bottom: var(--space-4);\par
+\}\par
+\par
+.error-card .err-icon \{\par
+  font-size: 22px;\par
+  flex-shrink: 0;\par
+\}\par
+\par
+.error-card h4 \{\par
+  font-size: 14px;\par
+  font-weight: 700;\par
+  color: var(--error);\par
+  margin-bottom: 4px;\par
+\}\par
+\par
+.error-card p \{\par
+  font-size: 13px;\par
+  color: var(--text-secondary);\par
+  line-height: 1.6;\par
+\}\par
+\par
+/* ═══════════════════════════════════════════\par
+   LOADING SPINNER\par
+═══════════════════════════════════════════ */\par
+.spinner \{\par
+  width: 18px;\par
+  height: 18px;\par
+  border: 2px solid rgba(255, 255, 255, 0.25);\par
+  border-top-color: #fff;\par
+  border-radius: 50%;\par
+  animation: spin 0.8s linear infinite;\par
+  display: inline-block;\par
+\}\par
+\par
+@keyframes spin \{\par
+  to \{\par
+    transform: rotate(360deg);\par
+  \}\par
+\}\par
+\par
+/* ═══════════════════════════════════════════\par
+   UTILITY\par
+═══════════════════════════════════════════ */\par
+.sr-only \{\par
+  position: absolute;\par
+  width: 1px;\par
+  height: 1px;\par
+  padding: 0;\par
+  margin: -1px;\par
+  overflow: hidden;\par
+  clip: rect(0, 0, 0, 0);\par
+  white-space: nowrap;\par
+  border: 0;\par
+\}\par
+\par
+.hidden \{\par
+  display: none !important;\par
+\}\par
+\par
+.mt-2 \{\par
+  margin-top: var(--space-2);\par
+\}\par
+\par
+.mt-4 \{\par
+  margin-top: var(--space-4);\par
+\}\par
+\par
+.gap-2 \{\par
+  gap: var(--space-2);\par
+\}\par
+\par
+.flex \{\par
+  display: flex;\par
+\}\par
+\par
+.flex-wrap \{\par
+  flex-wrap: wrap;\par
+\}\par
+\par
+.items-center \{\par
+  align-items: center;\par
+\}\par
+\par
+/* ═══════════════════════════════════════════\par
+   FOOTER\par
+═══════════════════════════════════════════ */\par
+.footer \{\par
+  text-align: center;\par
+  padding: var(--space-6);\par
+  border-top: 1px solid var(--border);\par
+  font-size: 12px;\par
+  color: var(--text-muted);\par
+\}\par
+\par
+.footer a \{\par
+  color: var(--accent-light);\par
+  text-decoration: none;\par
+\}\par
+\par
+/* ═══════════════════════════════════════════\par
+   RESPONSIVE\par
+═══════════════════════════════════════════ */\par
+@media (max-width: 1024px) \{\par
+  .main-layout \{\par
+    grid-template-columns: 1fr;\par
+  \}\par
+\par
+  .sidebar \{\par
+    display: none;\par
+  \}\par
+\par
+  .sidebar.mobile-open \{\par
+    display: block;\par
+    position: fixed;\par
+    inset: 0;\par
+    z-index: 150;\par
+    background: rgba(0, 0, 0, 0.6);\par
+    backdrop-filter: blur(4px);\par
+  \}\par
+\par
+  .sidebar.mobile-open .history-card \{\par
+    position: absolute;\par
+    right: 0;\par
+    top: 0;\par
+    bottom: 0;\par
+    width: 320px;\par
+    border-radius: 0;\par
+    max-height: 100vh;\par
+    overflow-y: auto;\par
+  \}\par
+\par
+  .history-btn-mobile \{\par
+    display: flex !important;\par
+  \}\par
+\}\par
+\par
+@media (max-width: 768px) \{\par
+  .header \{\par
+    padding: 0 var(--space-4);\par
+  \}\par
+\par
+  .header-tabs \{\par
+    gap: 1px;\par
+  \}\par
+\par
+  .tab-btn \{\par
+    padding: 6px 12px;\par
+    font-size: 12px;\par
+  \}\par
+\par
+  .logo-text \{\par
+    display: none;\par
+  \}\par
+\par
+  .hero \{\par
+    padding: var(--space-8) var(--space-4) var(--space-6);\par
+  \}\par
+\par
+  .main-layout \{\par
+    padding: 0 var(--space-4) var(--space-8);\par
+    gap: var(--space-4);\par
+  \}\par
+\par
+  .upload-panel \{\par
+    padding: var(--space-5);\par
+  \}\par
+\par
+  .drop-zone \{\par
+    padding: var(--space-8) var(--space-4);\par
+  \}\par
+\par
+  .upload-controls \{\par
+    flex-direction: column;\par
+    align-items: stretch;\par
+  \}\par
+\par
+  .btn-primary \{\par
+    margin-left: 0;\par
+    justify-content: center;\par
+  \}\par
+\par
+  .qa-actions \{\par
+    flex-direction: column;\par
+  \}\par
+\par
+  .qa-actions .btn-secondary \{\par
+    justify-content: center;\par
+  \}\par
+\par
+  .result-actions \{\par
+    flex-wrap: wrap;\par
+  \}\par
+\par
+  .footer \{\par
+    display: none;\par
+  \}\par
+\}\par
+\par
+@media (max-width: 480px) \{\par
+  .header-actions .btn-ghost span \{\par
+    display: none;\par
+  \}\par
+\par
+  .feature-chips \{\par
+    gap: var(--space-1);\par
+  \}\par
+\par
+  .chip \{\par
+    font-size: 11px;\par
+    padding: 4px 10px;\par
+  \}\par
+\}\par
+\par
+.history-btn-mobile \{\par
+  display: none;\par
+\}\par
+\par
+/* ═══════════════════════════════════════════\par
+   VOICE INPUT (MIC BUTTON)\par
+═══════════════════════════════════════════ */\par
+.qa-input-wrap \{\par
+  position: relative;\par
+  width: 100%;\par
+\}\par
+\par
+.btn-mic \{\par
+  position: absolute;\par
+  right: 10px;\par
+  bottom: 10px;\par
+  width: 38px;\par
+  height: 38px;\par
+  border-radius: 50%;\par
+  background: rgba(102, 126, 234, 0.15);\par
+  border: 1.5px solid var(--border-accent);\par
+  color: var(--accent-light);\par
+  cursor: pointer;\par
+  display: flex;\par
+  align-items: center;\par
+  justify-content: center;\par
+  transition: all var(--transition);\par
+  z-index: 2;\par
+  font-size: 17px;\par
+\}\par
+\par
+.btn-mic:hover \{\par
+  background: rgba(102, 126, 234, 0.3);\par
+  transform: scale(1.07);\par
+  box-shadow: 0 0 14px rgba(102, 126, 234, 0.35);\par
+\}\par
+\par
+.btn-mic.listening \{\par
+  background: rgba(248, 113, 113, 0.18);\par
+  border-color: var(--error);\par
+  color: var(--error);\par
+  animation: micPulse 1.2s ease-in-out infinite;\par
+\}\par
+\par
+@keyframes micPulse \{\par
+\par
+  0%,\par
+  100% \{\par
+    box-shadow: 0 0 0 0 rgba(248, 113, 113, 0.5);\par
+  \}\par
+\par
+  50% \{\par
+    box-shadow: 0 0 0 9px rgba(248, 113, 113, 0);\par
+  \}\par
+\}\par
+\par
+/* Mic unavailable state */\par
+.btn-mic.unavailable \{\par
+  opacity: 0.3;\par
+  cursor: not-allowed;\par
+\}\par
+\par
+/* ═══════════════════════════════════════════\par
+   TEXT-TO-SPEECH (READ ALOUD BUTTON)\par
+═══════════════════════════════════════════ */\par
+.btn-tts \{\par
+  padding: 8px 16px;\par
+  background: rgba(52, 211, 153, 0.1);\par
+  border: 1.5px solid rgba(52, 211, 153, 0.3);\par
+  color: var(--success);\par
+  border-radius: var(--radius-sm);\par
+  font-size: 13px;\par
+  font-weight: 600;\par
+  font-family: var(--font-sans);\par
+  cursor: pointer;\par
+  display: inline-flex;\par
+  align-items: center;\par
+  gap: var(--space-2);\par
+  transition: all var(--transition);\par
+  white-space: nowrap;\par
+\}\par
+\par
+.btn-tts:hover \{\par
+  background: rgba(52, 211, 153, 0.2);\par
+  transform: translateY(-1px);\par
+\}\par
+\par
+.btn-tts.speaking \{\par
+  background: rgba(52, 211, 153, 0.22);\par
+  border-color: var(--success);\par
+  animation: ttsPulse 1.5s ease-in-out infinite;\par
+\}\par
+\par
+@keyframes ttsPulse \{\par
+\par
+  0%,\par
+  100% \{\par
+    box-shadow: 0 0 0 0 rgba(52, 211, 153, 0.4);\par
+  \}\par
+\par
+  50% \{\par
+    box-shadow: 0 0 0 7px rgba(52, 211, 153, 0);\par
+  \}\par
+\}\par
+\par
+/* Voice status indicator bar */\par
+.voice-status \{\par
+  display: none;\par
+  align-items: center;\par
+  gap: var(--space-2);\par
+  margin-top: var(--space-2);\par
+  font-size: 12px;\par
+  font-weight: 600;\par
+  color: var(--error);\par
+  padding: 6px 12px;\par
+  background: rgba(248, 113, 113, 0.1);\par
+  border: 1px solid rgba(248, 113, 113, 0.25);\par
+  border-radius: var(--radius-sm);\par
+  animation: fadeUp 0.2s var(--ease);\par
+\}\par
+\par
+.voice-status.show \{\par
+  display: flex;\par
+\}\par
+\par
+.voice-dot \{\par
+  width: 8px;\par
+  height: 8px;\par
+  border-radius: 50%;\par
+  background: var(--error);\par
+  animation: micPulse 1s ease-in-out infinite;\par
+\}\par\par}
+
+{\b\f0\fs28 app.js\par}
+{\f1\fs20 /* =========================================================\par
+   app.js – VideoQA Core Application Logic\par
+   ========================================================= */\par
+\par
+// ── App State ──────────────────────────────────────────────\par
+const state = \{\par
+  theme: 'dark',\par
+  tab: 'ask',\par
+  phase: 'idle',       // idle | uploading | processing | ready\par
+  file: null,\par
+  videoUrl: null,\par
+  manualFrames: [],    // user selected frame timestamps\par
+  sessionData: null,   // processVideo result\par
+  currentAnswer: null,\par
+  history: [],\par
+  historyIndex: -1,\par
+  speakerLabels: true,\par
+  transcriptData: null,\par
+  summarizeMode: 'short',\par
+  transcriptSummarized: false,\par
+  videoSummarized: false,\par
+\};\par
+\par
+// ── DOM refs ───────────────────────────────────────────────\par
+const $ = id => document.getElementById(id);\par
+const $$ = sel => document.querySelectorAll(sel);\par
+\par
+// ── Boot ───────────────────────────────────────────────────\par
+document.addEventListener('DOMContentLoaded', () => \{\par
+  initTheme();\par
+  initTabs();\par
+  initUpload();\par
+  initQA();\par
+  initSummarize();\par
+  initTranscript();\par
+  initModal();\par
+  initHistorySidebar();\par
+  initHeaderActions();\par
+  renderDemoState();\par
+\});\par
+\par
+// ═══════════════════════════════════════════\par
+// THEME\par
+// ═══════════════════════════════════════════\par
+function initTheme() \{\par
+  const saved = localStorage.getItem('vqa-theme') || 'dark';\par
+  setTheme(saved);\par
+\}\par
+\par
+function setTheme(t) \{\par
+  state.theme = t;\par
+  document.documentElement.setAttribute('data-theme', t);\par
+  const btn = $('theme-toggle');\par
+  if (btn) btn.innerHTML = t === 'dark' ? '☀️' : '🌙';\par
+  localStorage.setItem('vqa-theme', t);\par
+\}\par
+\par
+// ═══════════════════════════════════════════\par
+// TABS\par
+// ═══════════════════════════════════════════\par
+function initTabs() \{\par
+  $$('.tab-btn').forEach(btn => \{\par
+    btn.addEventListener('click', () => switchTab(btn.dataset.tab));\par
+  \});\par
+\}\par
+\par
+function switchTab(tab) \{\par
+  state.tab = tab;\par
+  $$('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.tab === tab));\par
+  $$('.tab-panel').forEach(p => p.classList.toggle('active', p.id === `panel-$\{tab\}`));\par
+\}\par
+\par
+// ═══════════════════════════════════════════\par
+// HEADER ACTIONS\par
+// ═══════════════════════════════════════════\par
+function initHeaderActions() \{\par
+  $('theme-toggle').addEventListener('click', () => setTheme(state.theme === 'dark' ? 'light' : 'dark'));\par
+\par
+  $('clear-btn').addEventListener('click', () => \{\par
+    if (!confirm('Reset session and clear all data?')) return;\par
+    resetSession();\par
+  \});\par
+\par
+  // Mobile history drawer toggle\par
+  const mobileBtn = $('history-mobile-btn');\par
+  if (mobileBtn) \{\par
+    mobileBtn.addEventListener('click', () => \{\par
+      const sb = $('sidebar');\par
+      if (sb) sb.classList.toggle('mobile-open');\par
+    \});\par
+  \}\par
+\}\par
+\par
+function resetSession() \{\par
+  state.phase = 'idle';\par
+  state.file = null;\par
+  state.videoUrl = null;\par
+  state.manualFrames = [];\par
+  state.sessionData = null;\par
+  state.currentAnswer = null;\par
+  state.history = [];\par
+  state.transcriptData = null;\par
+  state.videoSummarized = false;\par
+  state.transcriptSummarized = false;\par
+  clearSessionId(); // wipe persisted session_id from sessionStorage\par
+\par
+  // Reset upload\par
+  $('drop-zone').classList.remove('file-selected');\par
+  $('file-info').classList.remove('show');\par
+  $('video-preview-wrap').classList.remove('show');\par
+  const preview = $('video-preview');\par
+  if (preview) \{ preview.src = ''; \}\par
+  $('file-input').value = '';\par
+\par
+  // Hide progress\par
+  $('progress-panel').classList.remove('show');\par
+  updateProgressUI(0, '');\par
+\par
+  // Reset buttons\par
+  $('process-btn').disabled = true;\par
+\par
+  // Clear results\par
+  renderDemoState();\par
+  clearSummarizeOutputs();\par
+  clearTranscriptOutput();\par
+\par
+  // Clear history\par
+  state.history = [];\par
+  renderHistory();\par
+\par
+  showToast('Session cleared', 'info');\par
+  switchTab('ask');\par
+\}\par
+\par
+// ═══════════════════════════════════════════\par
+// UPLOAD\par
+// ═══════════════════════════════════════════\par
+function initUpload() \{\par
+  const dropZone = $('drop-zone');\par
+  const fileInput = $('file-input');\par
+  const processBtn = $('process-btn');\par
+\par
+  const addUrlBtn = $('add-url-btn');\par
+  const urlInput = $('url-input');\par
+  if (addUrlBtn) \{\par
+    addUrlBtn.addEventListener('click', (e) => \{\par
+      e.stopPropagation();\par
+      const url = urlInput.value.trim();\par
+      if (!url) \{ showToast('Please enter a valid URL', 'info'); return; \}\par
+      handleUrlSelect(url);\par
+    \});\par
+  \}\par
+\par
+  // Click to open file picker\par
+  dropZone.addEventListener('click', () => fileInput.click());\par
+\par
+  fileInput.addEventListener('change', e => \{\par
+    const f = e.target.files[0];\par
+    if (f) handleFileSelect(f);\par
+  \});\par
+\par
+  // Drag & drop\par
+  dropZone.addEventListener('dragover', e => \{ e.preventDefault(); dropZone.classList.add('drag-over'); \});\par
+  dropZone.addEventListener('dragleave', () => dropZone.classList.remove('drag-over'));\par
+  dropZone.addEventListener('drop', e => \{\par
+    e.preventDefault();\par
+    dropZone.classList.remove('drag-over');\par
+    const f = e.dataTransfer.files[0];\par
+    if (f) handleFileSelect(f);\par
+  \});\par
+\par
+  // Remove file\par
+  $('file-remove').addEventListener('click', e => \{\par
+    e.stopPropagation();\par
+    removeFile();\par
+  \});\par
+\par
+  // Manual Frames\par
+  $('add-frame-btn').addEventListener('click', () => \{\par
+    const vp = $('video-preview');\par
+    if (!vp) return;\par
+    const t = Number(vp.currentTime.toFixed(2));\par
+    if (!state.manualFrames.includes(t)) \{\par
+      state.manualFrames.push(t);\par
+      state.manualFrames.sort((a,b) => a - b);\par
+      renderManualFrames();\par
+    \}\par
+  \});\par
+\par
+  // Process\par
+  processBtn.addEventListener('click', processVideo);\par
+\}\par
+\par
+function handleFileSelect(file) \{\par
+  const allowed = ['video/mp4', 'video/quicktime', 'video/x-matroska', 'video/webm', 'video/avi'];\par
+  if (!allowed.includes(file.type) && !file.name.match(/\\.(mp4|mov|mkv|webm|avi)$/i)) \{\par
+    showToast('Unsupported file format. Use MP4, MOV, or MKV.', 'error');\par
+    return;\par
+  \}\par
+  state.file = file;\par
+  state.videoUrl = null;\par
+  state.phase = 'uploading';\par
+\par
+  // Show file info\par
+  $('file-name-display').textContent = file.name;\par
+  $('file-detail-display').textContent = `$\{formatFileSize(file.size)\} · $\{file.type || 'video'\}`;\par
+  $('file-info').classList.add('show');\par
+  $('process-btn').disabled = false;\par
+\par
+  // Video preview\par
+  const url = URL.createObjectURL(file);\par
+  const vp = $('video-preview');\par
+  vp.style.display = 'block';\par
+  vp.src = url;\par
+  vp.onloadedmetadata = () => \{\par
+    const dur = formatDuration(vp.duration);\par
+    $('file-detail-display').textContent = `$\{formatFileSize(file.size)\} · $\{dur\}`;\par
+  \};\par
+  $('video-preview-wrap').classList.add('show');\par
+  $('manual-selection-tools').style.display = 'flex';\par
+\par
+  showToast(`"$\{file.name\}" selected`, 'success');\par
+\}\par
+\par
+function handleUrlSelect(url) \{\par
+  state.file = null;\par
+  state.videoUrl = url;\par
+  state.phase = 'uploading';\par
+\par
+  // Show file info\par
+  $('file-name-display').textContent = url;\par
+  $('file-detail-display').textContent = `URL Video`;\par
+  $('file-info').classList.add('show');\par
+  $('process-btn').disabled = false;\par
+\par
+  // Hide the <video> element because we can't preview all URLs uniformly,\par
+  // but keep the wrapper around to show the manual tools if user wants to set timestamps.\par
+  const vp = $('video-preview');\par
+  vp.style.display = 'none';\par
+  $('video-preview-wrap').classList.add('show');\par
+  $('manual-selection-tools').style.display = 'flex';\par
+\par
+  showToast(`URL selected`, 'success');\par
+\}\par
+\par
+function removeFile() \{\par
+  state.file = null;\par
+  state.videoUrl = null;\par
+  state.manualFrames = [];\par
+  state.phase = 'idle';\par
+  $('file-info').classList.remove('show');\par
+  $('video-preview-wrap').classList.remove('show');\par
+  $('video-preview').style.display = 'block';\par
+  $('manual-selection-tools').style.display = 'none';\par
+  $('manual-start').value = '';\par
+  $('manual-end').value = '';\par
+  renderManualFrames();\par
+  $('file-input').value = '';\par
+  const urlInput = $('url-input');\par
+  if(urlInput) urlInput.value = '';\par
+  $('process-btn').disabled = true;\par
+\}\par
+\par
+async function processVideo() \{\par
+  if (!state.file && !state.videoUrl) return;\par
+\par
+  const language = $('language-select').value;\par
+  const mode = document.querySelector('.mode-opt.active')?.dataset.mode || 'fast';\par
+  const startTime = $('manual-start').value || '';\par
+  const endTime = $('manual-end').value || '';\par
+  const manFrames = state.manualFrames.join(',');\par
+  const processBtn = $('process-btn');\par
+\par
+  processBtn.disabled = true;\par
+  processBtn.innerHTML = '<span class="spinner"></span> Processing…';\par
+  state.phase = 'processing';\par
+\par
+  $('progress-panel').classList.add('show');\par
+\par
+  const steps = [\par
+    \{ label: 'Extracting audio', icon: '🔊' \},\par
+    \{ label: 'Transcribing speech', icon: '📝' \},\par
+    \{ label: 'Understanding visuals', icon: '👁️' \},\par
+    \{ label: 'Generating answer model', icon: '🧠' \},\par
+    \{ label: 'Creating summaries', icon: '✨' \},\par
+  ];\par
+  resetProgressSteps(steps);\par
+\par
+  try \{\par
+    const data = await apiProcessVideo(state.file, state.videoUrl, language, mode, startTime, endTime, manFrames, (stepLabel, pct) => \{\par
+      const idx = steps.findIndex(s => s.label === stepLabel);\par
+      updateProgressUI(pct, stepLabel, idx, steps.length);\par
+    \});\par
+\par
+    state.sessionData = data;\par
+    state.transcriptData = data.transcript;\par
+    state.phase = 'ready';\par
+\par
+    processBtn.innerHTML = '✅ Processing Complete';\par
+    setTimeout(() => \{\par
+      processBtn.innerHTML = '🔄 Re-process';\par
+      processBtn.disabled = false;\par
+    \}, 1500);\par
+\par
+    // Unlock tabs, render ready state\par
+    enableResultTabs();\par
+    renderReadyState();\par
+    renderTranscriptTab();\par
+    showToast('Video processed successfully!', 'success');\par
+    switchTab('ask');\par
+\par
+  \} catch (err) \{\par
+    state.phase = 'idle';\par
+    processBtn.innerHTML = '⚡ Process Video';\par
+    processBtn.disabled = false;\par
+    showErrorCard($('ask-content'), 'Processing Failed', err.message || 'Could not process the video. Please try again.');\par
+    showToast('Processing failed', 'error');\par
+  \}\par
+\}\par
+\par
+// ── Progress UI ────────────────────────────────────────────\par
+function resetProgressSteps(steps) \{\par
+  const container = $('progress-steps');\par
+  container.innerHTML = '';\par
+  steps.forEach((s, i) => \{\par
+    const el = document.createElement('div');\par
+    el.className = 'progress-step';\par
+    el.id = `step-$\{i\}`;\par
+    el.innerHTML = `\par
+      <div class="step-icon" id="step-icon-$\{i\}">\par
+        <span>$\{s.icon\}</span>\par
+      </div>\par
+      <span class="step-label" id="step-label-$\{i\}">$\{s.label\}</span>\par
+    `;\par
+    container.appendChild(el);\par
+  \});\par
+\}\par
+\par
+function updateProgressUI(pct, label, currentIdx = -1, total = 5) \{\par
+  $('progress-bar').style.width = pct + '%';\par
+  $('progress-pct').textContent = Math.round(pct) + '%';\par
+  $('progress-status').textContent = label;\par
+\par
+  for (let i = 0; i < total; i++) \{\par
+    const icon = $(`step-icon-$\{i\}`);\par
+    const lbl = $(`step-label-$\{i\}`);\par
+    if (!icon) continue;\par
+    if (i < currentIdx) \{\par
+      icon.className = 'step-icon done';\par
+      icon.innerHTML = '';\par
+      if (lbl) lbl.className = 'step-label';\par
+    \} else if (i === currentIdx) \{\par
+      icon.className = 'step-icon active';\par
+      icon.innerHTML = '<div style="width:10px;height:10px;border:2px solid currentColor;border-radius:50%;"></div>';\par
+      if (lbl) lbl.className = 'step-label active';\par
+    \}\par
+  \}\par
+\}\par
+\par
+// ── Helpers ────────────────────────────────────────────────\par
+function formatFileSize(bytes) \{\par
+  if (bytes < 1024) return bytes + ' B';\par
+  if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';\par
+  return (bytes / (1024 * 1024)).toFixed(1) + ' MB';\par
+\}\par
+function formatDuration(secs) \{\par
+  const m = Math.floor(secs / 60);\par
+  const s = Math.floor(secs % 60);\par
+  return `$\{m\}:$\{s.toString().padStart(2, '0')\}`;\par
+\}\par
+function formatDurationFixed(secs) \{\par
+  const m = Math.floor(secs / 60);\par
+  const s = (secs % 60).toFixed(1);\par
+  return `$\{m\}:$\{s.padStart(4, '0')\}`;\par
+\}\par
+\par
+function renderManualFrames() \{\par
+  const list = $('manual-frames-list');\par
+  if (!list) return;\par
+  list.innerHTML = state.manualFrames.map(t => `\par
+    <span class="fmt-badge" style="display:flex;align-items:center;gap:4px;padding-right:6px;">\par
+      $\{formatDurationFixed(t)\}\par
+      <button type="button" onclick="removeManualFrame($\{t\})" style="background:none;border:none;color:inherit;cursor:pointer;padding:0;font-size:10px;margin-left:4px;">✕</button>\par
+    </span>\par
+  `).join('');\par
+\}\par
+\par
+window.removeManualFrame = function(t) \{\par
+  state.manualFrames = state.manualFrames.filter(x => x !== t);\par
+  renderManualFrames();\par
+\};\par
+\par
+// ═══════════════════════════════════════════\par
+// MODE TOGGLE\par
+// ═══════════════════════════════════════════\par
+document.addEventListener('DOMContentLoaded', () => \{\par
+  $$('.mode-opt').forEach(btn => \{\par
+    btn.addEventListener('click', () => \{\par
+      $$('.mode-opt').forEach(b => b.classList.remove('active'));\par
+      btn.classList.add('active');\par
+    \});\par
+  \});\par
+\});\par
+\par
+// ═══════════════════════════════════════════\par
+// DEMO / READY STATE\par
+// ═══════════════════════════════════════════\par
+function renderDemoState() \{\par
+  $('ask-content').innerHTML = `\par
+    <div class="demo-state glass">\par
+      <span class="demo-icon">🎬</span>\par
+      <h3>No video uploaded yet</h3>\par
+      <p>Upload and process a video to start asking questions, viewing transcripts, and generating summaries.</p>\par
+    </div>\par
+  `;\par
+  $('summarize-content').innerHTML = `\par
+    <div class="demo-state glass">\par
+      <span class="demo-icon">📊</span>\par
+      <h3>Upload a video first</h3>\par
+      <p>Process a video to generate intelligent summaries and key insights.</p>\par
+    </div>\par
+  `;\par
+  $('transcript-content').innerHTML = `\par
+    <div class="demo-state glass">\par
+      <span class="demo-icon">📄</span>\par
+      <h3>No transcript yet</h3>\par
+      <p>Upload and process a video to view its full transcript with search and timestamps.</p>\par
+    </div>\par
+  `;\par
+\}\par
+\par
+function enableResultTabs() \{\par
+  // Nothing to hard-disable, but we render useful UI now\par
+\}\par
+\par
+function renderReadyState() \{\par
+  $('ask-content').innerHTML = `\par
+    <div class="glass qa-input-card">\par
+      <h2>💬 Ask a Question</h2>\par
+      <div class="qa-input-wrap">\par
+        <textarea id="question-input" class="question-area" placeholder="Type your question or click 🎤 to speak…" rows="4" style="padding-right:56px;"></textarea>\par
+        <button class="btn-mic" id="mic-btn" title="Click to speak your question" aria-label="Voice input">\par
+          <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2H3v2a9 9 0 0 0 8 8.94V23H9v2h6v-2h-2v-2.06A9 9 0 0 0 21 12v-2z"/></svg>\par
+        </button>\par
+      </div>\par
+      <div class="voice-status" id="voice-status">\par
+        <span class="voice-dot"></span>\par
+        <span id="voice-status-text">Listening…</span>\par
+      </div>\par
+      <div class="qa-actions">\par
+        <button class="btn-primary" id="ask-btn">\par
+          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="m5 12 7-7 7 7M12 5v14"/></svg>\par
+          Ask Question\par
+        </button>\par
+        <button class="btn-secondary" id="regen-btn" disabled>🔄 Regenerate</button>\par
+      </div>\par
+    </div>\par
+    <div id="answer-area"></div>\par
+  `;\par
+\par
+  $('ask-btn').addEventListener('click', handleAsk);\par
+  $('question-input').addEventListener('keydown', e => \{\par
+    if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') handleAsk();\par
+  \});\par
+  $('regen-btn').addEventListener('click', handleAsk);\par
+\par
+  initVoiceInput();\par
+\}\par
+\par
+function clearSummarizeOutputs() \{\par
+  const sc = $('summarize-content');\par
+  if (sc) sc.innerHTML = '';\par
+\}\par
+function clearTranscriptOutput() \{\par
+  const tc = $('transcript-content');\par
+  if (tc) tc.innerHTML = '';\par
+\}\par
+\par
+// ═══════════════════════════════════════════\par
+// QA – ASK\par
+// ═══════════════════════════════════════════\par
+function initQA() \{\par
+  // Will be initialized after renderReadyState()\par
+\}\par
+\par
+async function handleAsk() \{\par
+  const input = $('question-input');\par
+  if (!input) return;\par
+  const question = input.value.trim();\par
+  if (!question) \{ showToast('Please enter a question.', 'info'); return; \}\par
+\par
+  const askBtn = $('ask-btn');\par
+  const regenBtn = $('regen-btn');\par
+  askBtn.disabled = true;\par
+  askBtn.innerHTML = '<span class="spinner"></span> Thinking…';\par
+\par
+  const area = $('answer-area');\par
+  area.innerHTML = '<div class="demo-state"><span class="demo-icon" style="font-size:28px;animation:pulse 1.5s infinite">🧠</span><p>Analyzing video and generating answer…</p></div>';\par
+\par
+  try \{\par
+    const language = $('language-select')?.value || 'en';\par
+    const result = await apiAsk(question, language);\par
+\par
+    // Push to history\par
+    addToHistory(question, result);\par
+\par
+    // Render\par
+    renderAnswerCards(result, area);\par
+\par
+    regenBtn.disabled = false;\par
+  \} catch (err) \{\par
+    area.innerHTML = '';\par
+    showErrorCard(area, 'Failed to get answer', err.message || 'Please try again.');\par
+  \} finally \{\par
+    askBtn.disabled = false;\par
+    askBtn.innerHTML = '<svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="m5 12 7-7 7 7M12 5v14"/></svg> Ask Question';\par
+  \}\par
+\}\par
+\par
+function renderAnswerCards(result, container) \{\par
+  const answerHtml = result.answer.replace(/\\*\\*(.*?)\\*\\*/g, '<strong>$1</strong>');\par
+  const safeAnswer = escapeHtml(JSON.stringify(result.answer));\par
+  container.innerHTML = `\par
+    <!-- Answer Card -->\par
+    <div class="glass result-card">\par
+      <div class="result-card-header">\par
+        <span class="result-label"><span class="dot-accent"></span>Answer</span>\par
+        <div class="result-actions">\par
+          <button class="btn-tts" id="tts-btn" onclick="toggleReadAloud($\{safeAnswer\}, this)">\par
+            <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg>\par
+            Read Aloud\par
+          </button>\par
+          <button class="btn-secondary" onclick="copyText($\{safeAnswer\}, 'Answer copied!')">📋 Copy</button>\par
+          <button class="btn-secondary" onclick="downloadText($\{safeAnswer\}, 'answer.txt')">⬇️ Download</button>\par
+        </div>\par
+      </div>\par
+      <div class="answer-text">$\{answerHtml\}</div>\par
+      <div class="confidence-badge">$\{result.confidence\}</div>\par
+    </div>\par
+\par
+    <!-- Clip Card -->\par
+    <div class="glass clip-card">\par
+      <div class="result-card-header">\par
+        <span class="result-label"><span class="dot-accent"></span>Relevant Video Clip</span>\par
+      </div>\par
+      <div class="clip-label">📍 $\{result.clip.label\}</div>\par
+      <div class="clip-player-wrap">\par
+        $\{result.clip.url\par
+      ? `<video controls style="width:100%;border-radius:var(--radius-md);" src="$\{API_BASE\}$\{result.clip.url\}" preload="metadata"></video>`\par
+      : `<div class="clip-placeholder">\par
+              <span>🎬</span>\par
+              <p>Clip preview available after processing with "QA + Clip Retrieval" mode</p>\par
+              <p style="font-size:12px;margin-top:4px;color:var(--text-muted)">Timestamp: $\{result.clip.start\}s – $\{result.clip.end\}s</p>\par
+            </div>`\par
+    \}\par
+      </div>\par
+      <div class="clip-actions">\par
+        <button class="btn-secondary" onclick="showToast('Download clip: backend required', 'info')">⬇️ Download Clip</button>\par
+        <button class="btn-secondary" onclick="showToast('Opens at $\{result.clip.start\}s when backend connected', 'info')">▶️ Open at $\{formatDuration(result.clip.start)\}</button>\par
+      </div>\par
+    </div>\par
+\par
+    <!-- Evidence Panel -->\par
+    <div class="glass evidence-card">\par
+      <div class="evidence-toggle" onclick="toggleEvidence(this)">\par
+        <h4>🔍 Evidence Used <span style="color:var(--text-muted);font-weight:400;font-size:12px;">($\{result.evidence.transcript_excerpts.length + result.evidence.visual_captions.length\} sources)</span></h4>\par
+        <span class="toggle-arrow">▼</span>\par
+      </div>\par
+      <div class="evidence-body" id="evidence-body">\par
+        <div class="evidence-section">\par
+          <div class="evidence-title">📝 Transcript Excerpts</div>\par
+          $\{result.evidence.transcript_excerpts.map(t => `<div class="evidence-item">"$\{t\}"</div>`).join('')\}\par
+        </div>\par
+        <div class="evidence-section">\par
+          <div class="evidence-title">👁️ Visual Captions</div>\par
+          $\{result.evidence.visual_captions.map(c => `<div class="evidence-item" style="border-left-color:var(--accent-2)">$\{c\}</div>`).join('')\}\par
+        </div>\par
+      </div>\par
+    </div>\par
+  `;\par
+\}\par
+\par
+\par
+// ═══════════════════════════════════════════\par
+// VOICE INPUT (MIC – SpeechRecognition API)\par
+// ═══════════════════════════════════════════\par
+let _recognition = null;\par
+let _isListening = false;\par
+\par
+// Map ISO language codes to BCP-47 locales for SpeechRecognition\par
+const LANG_TO_BCP47 = \{\par
+  en: 'en-US', hi: 'hi-IN', te: 'te-IN', ta: 'ta-IN',\par
+  kn: 'kn-IN', ml: 'ml-IN', mr: 'mr-IN', bn: 'bn-IN',\par
+  pa: 'pa-IN', gu: 'gu-IN', ur: 'ur-PK',\par
+  es: 'es-ES', fr: 'fr-FR', de: 'de-DE', zh: 'zh-CN',\par
+  ar: 'ar-SA', ja: 'ja-JP', ko: 'ko-KR', pt: 'pt-BR',\par
+  ru: 'ru-RU', it: 'it-IT',\par
+\};\par
+\par
+function initVoiceInput() \{\par
+  const micBtn = $('mic-btn');\par
+  const status = $('voice-status');\par
+  const statusTx = $('voice-status-text');\par
+  const input = $('question-input');\par
+\par
+  const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;\par
+  if (!SpeechRec) \{\par
+    if (micBtn) \{ micBtn.classList.add('unavailable'); micBtn.title = 'Voice input not supported in this browser (use Chrome/Edge)'; \}\par
+    return;\par
+  \}\par
+\par
+  _recognition = new SpeechRec();\par
+  _recognition.continuous = false;\par
+  _recognition.interimResults = true;\par
+\par
+  _recognition.onstart = () => \{\par
+    _isListening = true;\par
+    micBtn.classList.add('listening');\par
+    micBtn.innerHTML = '<svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="12" rx="3"/><path d="M19 10v2a7 7 0 0 1-14 0v-2H3v2a9 9 0 0 0 8 8.94V23H9v2h6v-2h-2v-2.06A9 9 0 0 0 21 12v-2z"/></svg>';\par
+    if (status) status.classList.add('show');\par
+    if (statusTx) statusTx.textContent = 'Listening… speak your question';\par
+  \};\par
+\par
+  _recognition.onresult = (e) => \{\par
+    let interim = '', final = '';\par
+    for (let i = e.resultIndex; i < e.results.length; i++) \{\par
+      const t = e.results[i][0].transcript;\par
+      if (e.results[i].isFinal) final += t; else interim += t;\par
+    \}\par
+    if (input) input.value = final || interim;\par
+    if (statusTx) statusTx.textContent = interim ? `Hearing: "$\{interim\}"` : 'Listening…';\par
+  \};\par
+\par
+  _recognition.onend = () => \{\par
+    _isListening = false;\par
+    micBtn.classList.remove('listening');\par
+    micBtn.innerHTML = '<svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2H3v2a9 9 0 0 0 8 8.94V23H9v2h6v-2h-2v-2.06A9 9 0 0 0 21 12v-2z"/></svg>';\par
+    if (status) status.classList.remove('show');\par
+    if (input && input.value.trim()) showToast('Question captured! Press Ask to submit.', 'success');\par
+  \};\par
+\par
+  _recognition.onerror = (e) => \{\par
+    _isListening = false;\par
+    micBtn.classList.remove('listening');\par
+    if (status) status.classList.remove('show');\par
+    const msg = e.error === 'not-allowed'\par
+      ? 'Microphone access denied. Allow mic in browser settings.'\par
+      : `Voice error: $\{e.error\}`;\par
+    showToast(msg, 'error');\par
+  \};\par
+\par
+  micBtn.addEventListener('click', () => \{\par
+    if (_isListening) \{\par
+      _recognition.stop();\par
+      return;\par
+    \}\par
+    const langCode = $('language-select')?.value || 'en';\par
+    _recognition.lang = LANG_TO_BCP47[langCode] || 'en-US';\par
+    try \{ _recognition.start(); \}\par
+    catch (err) \{ showToast('Could not start voice input: ' + err.message, 'error'); \}\par
+  \});\par
+\}\par
+\par
+// ═══════════════════════════════════════════\par
+// TEXT-TO-SPEECH (SpeechSynthesis API)\par
+// ═══════════════════════════════════════════\par
+let _ttsUtterance = null;\par
+let _ttsSpeaking = false;\par
+\par
+const LANG_TO_TTS_BCP47 = \{\par
+  en: 'en-US', hi: 'hi-IN', te: 'te-IN', ta: 'ta-IN',\par
+  kn: 'kn-IN', ml: 'ml-IN', mr: 'mr-IN', bn: 'bn-IN',\par
+  pa: 'pa-IN', gu: 'gu-IN', ur: 'ur-PK',\par
+  es: 'es-ES', fr: 'fr-FR', de: 'de-DE', zh: 'zh-CN',\par
+  ar: 'ar-SA', ja: 'ja-JP', ko: 'ko-KR', pt: 'pt-BR',\par
+  ru: 'ru-RU', it: 'it-IT',\par
+\};\par
+\par
+function toggleReadAloud(text, btn) \{\par
+  if (!window.speechSynthesis) \{\par
+    showToast('Text-to-speech not supported in this browser.', 'error'); return;\par
+  \}\par
+\par
+  if (_ttsSpeaking) \{\par
+    window.speechSynthesis.cancel();\par
+    _ttsSpeaking = false;\par
+    if (btn) \{ btn.classList.remove('speaking'); btn.innerHTML = '<svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg> Read Aloud'; \}\par
+    return;\par
+  \}\par
+\par
+  // Strip markdown bold marks\par
+  const cleanText = text.replace(/\\*\\*(.*?)\\*\\*/g, '$1');\par
+  _ttsUtterance = new SpeechSynthesisUtterance(cleanText);\par
+\par
+  const langCode = $('language-select')?.value || 'en';\par
+  _ttsUtterance.lang = LANG_TO_TTS_BCP47[langCode] || 'en-US';\par
+  _ttsUtterance.rate = 0.95;\par
+  _ttsUtterance.pitch = 1.0;\par
+\par
+  // Try to pick a voice matching the language\par
+  const voices = window.speechSynthesis.getVoices();\par
+  const match = voices.find(v => v.lang.startsWith(_ttsUtterance.lang.split('-')[0]));\par
+  if (match) _ttsUtterance.voice = match;\par
+\par
+  _ttsUtterance.onstart = () => \{\par
+    _ttsSpeaking = true;\par
+    if (btn) \{ btn.classList.add('speaking'); btn.innerHTML = '<svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24"><path d="M6 19h4V5H6zm8-14v14h4V5z"/></svg> Stop'; \}\par
+  \};\par
+  _ttsUtterance.onend = _ttsUtterance.onerror = () => \{\par
+    _ttsSpeaking = false;\par
+    if (btn) \{ btn.classList.remove('speaking'); btn.innerHTML = '<svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg> Read Aloud'; \}\par
+  \};\par
+\par
+  window.speechSynthesis.speak(_ttsUtterance);\par
+  showToast('Reading answer aloud…', 'info');\par
+\}\par
+\par
+function toggleEvidence(el) \{\par
+  const body = $('evidence-body');\par
+  const arrow = el.querySelector('.toggle-arrow');\par
+  if (body) body.classList.toggle('show');\par
+  if (arrow) arrow.classList.toggle('open');\par
+\}\par
+\par
+\par
+// ═══════════════════════════════════════════\par
+// HISTORY SIDEBAR\par
+// ═══════════════════════════════════════════\par
+function initHistorySidebar() \{\par
+  // Close sidebar on overlay click (mobile)\par
+  const sb = $('sidebar');\par
+  if (sb) \{\par
+    sb.addEventListener('click', e => \{\par
+      if (e.target === sb) sb.classList.remove('mobile-open');\par
+    \});\par
+  \}\par
+  renderHistory();\par
+\}\par
+\par
+function addToHistory(question, result) \{\par
+  const item = \{\par
+    id: Date.now(),\par
+    question,\par
+    result,\par
+    time: new Date().toLocaleTimeString([], \{ hour: '2-digit', minute: '2-digit' \})\par
+  \};\par
+  state.history.unshift(item);\par
+  renderHistory();\par
+\}\par
+\par
+function renderHistory() \{\par
+  const list = $('history-list');\par
+  const count = $('history-count');\par
+  if (!list) return;\par
+  if (count) count.textContent = state.history.length;\par
+\par
+  if (state.history.length === 0) \{\par
+    list.innerHTML = '<div class="history-empty">No questions yet.<br>Ask something to get started.</div>';\par
+    return;\par
+  \}\par
+\par
+  list.innerHTML = state.history.map((item, i) => `\par
+  <div class="history-item $\{i === 0 && state.historyIndex === 0 ? 'active' : ''\}" onclick="restoreHistoryItem($\{item.id\})">\par
+      <div class="hi-question">$\{escapeHtml(item.question)\}</div>\par
+      <div class="hi-time">$\{item.time\}</div>\par
+    </div>\par
+  `).join('');\par
+\}\par
+\par
+function restoreHistoryItem(id) \{\par
+  const item = state.history.find(h => h.id === id);\par
+  if (!item) return;\par
+  if (state.phase !== 'ready') return;\par
+\par
+  const input = $('question-input');\par
+  if (input) input.value = item.question;\par
+\par
+  const area = $('answer-area');\par
+  if (area) renderAnswerCards(item.result, area);\par
+\par
+  // Mark active\par
+  $$('.history-item').forEach(el => el.classList.remove('active'));\par
+  // Sidebar close on mobile\par
+  $('sidebar')?.classList.remove('mobile-open');\par
+  switchTab('ask');\par
+\}\par
+\par
+// ═══════════════════════════════════════════\par
+// SUMMARIZE TAB\par
+// ═══════════════════════════════════════════\par
+function initSummarize() \{\par
+  // Wired after DOM ready – see renderSummarizeUI\par
+\}\par
+\par
+function renderSummarizeUI() \{\par
+  const sc = $('summarize-content');\par
+  sc.innerHTML = `\par
+  <div class="summarize-grid">\par
+      <!--Video Summary-->\par
+      <div class="glass summarize-section" id="video-sum-section">\par
+        <h3>🎥 Video Summary</h3>\par
+        <div class="summary-toggle">\par
+          <button class="sum-opt active" data-mode="short">Short</button>\par
+          <button class="sum-opt" data-mode="detailed">Detailed</button>\par
+          <button class="sum-opt" data-mode="chapters">Chapters</button>\par
+        </div>\par
+        <button class="btn-primary" id="gen-sum-btn" style="margin-bottom:var(--space-4);">✨ Generate Summary</button>\par
+        <div class="summary-output" id="video-sum-output">\par
+          <span style="color:var(--text-muted);">Click "Generate Summary" to get started.</span>\par
+        </div>\par
+        <div class="export-row" id="video-sum-exports" style="display:none;">\par
+          <button class="btn-secondary" id="copy-sum-btn">📋 Copy</button>\par
+          <button class="btn-secondary" id="dl-sum-btn">⬇️ Download TXT</button>\par
+        </div>\par
+      </div>\par
+\par
+      <!--Transcript Summary-->\par
+  <div class="glass summarize-section" id="transcript-sum-section">\par
+    <h3>📝 Transcript Summary</h3>\par
+    <button class="btn-primary" id="gen-transcript-sum-btn" style="margin-bottom:var(--space-4);">📋 Summarize Transcript</button>\par
+    <div class="summary-output" id="transcript-sum-output">\par
+      <span style="color:var(--text-muted);">Generate a smart summary of the transcript with key points and keywords.</span>\par
+    </div>\par
+    <div class="export-row" id="transcript-sum-exports" style="display:none;">\par
+      <button class="btn-secondary" id="copy-ts-btn">📋 Copy</button>\par
+      <button class="btn-secondary" id="dl-ts-btn">⬇️ Download TXT</button>\par
+    </div>\par
+  </div>\par
+    </div>\par
+  `;\par
+\par
+  // Mode toggle\par
+  sc.querySelectorAll('.sum-opt').forEach(btn => \{\par
+    btn.addEventListener('click', () => \{\par
+      sc.querySelectorAll('.sum-opt').forEach(b => b.classList.remove('active'));\par
+      btn.classList.add('active');\par
+      state.summarizeMode = btn.dataset.mode;\par
+      if (state.videoSummarized) renderVideoSummaryOutput(window._videoSumData);\par
+    \});\par
+  \});\par
+\par
+  $('gen-sum-btn').addEventListener('click', generateVideoSummary);\par
+  $('gen-transcript-sum-btn').addEventListener('click', generateTranscriptSummary);\par
+\}\par
+\par
+async function generateVideoSummary() \{\par
+  const btn = $('gen-sum-btn');\par
+  const out = $('video-sum-output');\par
+  btn.disabled = true;\par
+  btn.innerHTML = '<span class="spinner"></span> Generating…';\par
+  out.innerHTML = '<span style="color:var(--text-muted);">Analyzing video content…</span>';\par
+\par
+  try \{\par
+    const data = await apiSummarizeVideo(state.summarizeMode);\par
+    window._videoSumData = data;\par
+    state.videoSummarized = true;\par
+    renderVideoSummaryOutput(data);\par
+    $('video-sum-exports').style.display = 'flex';\par
+\par
+    // Wire export buttons\par
+    const exportText = getVideoSumText(data);\par
+    $('copy-sum-btn').onclick=() => copyText(exportText, 'Summary copied!');\par
+    $('dl-sum-btn').onclick=() => downloadText(exportText, 'video_summary.txt');\par
+\par
+    showToast('Video summary generated!', 'success');\par
+  \} catch (err) \{\par
+    out.innerHTML = `<span style="color:var(--error);"> Error: $\{err.message\}</span> `;\par
+  \} finally \{\par
+    btn.disabled = false;\par
+    btn.innerHTML = '✨ Generate Summary';\par
+  \}\par
+\}\par
+\par
+function renderVideoSummaryOutput(data) \{\par
+  const out = $('video-sum-output');\par
+  const mode = state.summarizeMode;\par
+\par
+  if (mode === 'short') \{\par
+    out.innerHTML = `<div style="line-height:1.8;"> $\{data.short\}</div> `;\par
+  \} else if (mode === 'detailed') \{\par
+    out.innerHTML = data.detailed.map(b =>\par
+      `<div class="summary-bullet"> <span>$\{typeof b === 'string' ? b.replace(/<[^>]*>/g, '').trim() : b\}</span></div> `\par
+    ).join('');\par
+  \} else if (mode === 'chapters') \{\par
+    out.innerHTML = `<div class="chapters-list">\par
+  $\{data.chapters.map(c => `\par
+        <div class="chapter-item">\par
+          <span class="chapter-time">$\{c.time\}</span>\par
+          <span class="chapter-title">$\{c.title\}</span>\par
+        </div>`).join('')\par
+      \}\par
+    </div> `;\par
+  \}\par
+\}\par
+\par
+function getVideoSumText(data) \{\par
+  const m = state.summarizeMode;\par
+  if (m === 'short') return data.short;\par
+  if (m === 'detailed') return data.detailed.join('\\n• ');\par
+  return data.chapters.map(c => `$\{c.time\} – $\{c.title\} `).join('\\n');\par
+\}\par
+\par
+async function generateTranscriptSummary() \{\par
+  const btn = $('gen-transcript-sum-btn');\par
+  const out = $('transcript-sum-output');\par
+  btn.disabled = true;\par
+  btn.innerHTML = '<span class="spinner"></span> Summarizing…';\par
+  out.innerHTML = '<span style="color:var(--text-muted);">Extracting key information…</span>';\par
+\par
+  try \{\par
+    const data = await apiSummarizeTranscript();\par
+    state.transcriptSummarized = true;\par
+\par
+    out.innerHTML = `\par
+  <div style="margin-bottom:var(--space-4);">\par
+    <div class="evidence-title" style="margin-bottom:var(--space-3);">🎯 Key Points</div>\par
+        $\{data.key_points.map(p => `<div class="summary-bullet"><span>$\{typeof p === 'string' ? p.replace(/<[^>]*>/g, '').trim() : p\}</span></div>`).join('')\}\par
+      </div>\par
+      <div style="margin-bottom:var(--space-4);">\par
+        <div class="evidence-title" style="margin-bottom:var(--space-3);">✅ Action Items</div>\par
+        <ul class="action-items">\par
+          $\{data.action_items.map(a => `<li>$\{typeof a === 'string' ? a.replace(/<[^>]*>/g, '').trim() : a\}</li>`).join('')\}\par
+        </ul>\par
+      </div>\par
+      <div>\par
+        <div class="evidence-title" style="margin-bottom:var(--space-3);">🏷️ Keywords</div>\par
+        <div class="kw-chips">\par
+          $\{data.keywords.map(k => `<span class="kw-chip">$\{k\}</span>`).join('')\}\par
+        </div>\par
+      </div>\par
+`;\par
+\par
+    $('transcript-sum-exports').style.display = 'flex';\par
+    const exportText = [\par
+      'KEY POINTS:\\n' + data.key_points.join('\\n'),\par
+      'ACTION ITEMS:\\n' + data.action_items.join('\\n'),\par
+      'KEYWORDS: ' + data.keywords.join(', ')\par
+    ].join('\\n\\n');\par
+    $('copy-ts-btn').onclick=() => copyText(exportText, 'Transcript summary copied!');\par
+    $('dl-ts-btn').onclick=() => downloadText(exportText, 'transcript_summary.txt');\par
+\par
+    showToast('Transcript summary ready!', 'success');\par
+  \} catch (err) \{\par
+    out.innerHTML = `<span style="color:var(--error);"> Error: $\{err.message\}</span> `;\par
+  \} finally \{\par
+    btn.disabled = false;\par
+    btn.innerHTML = '📋 Summarize Transcript';\par
+  \}\par
+\}\par
+\par
+// ═══════════════════════════════════════════\par
+// TRANSCRIPT TAB\par
+// ═══════════════════════════════════════════\par
+function initTranscript() \{ \}\par
+\par
+function renderTranscriptTab() \{\par
+  const tc = $('transcript-content');\par
+  const lines = state.transcriptData || [];\par
+\par
+  tc.innerHTML = `\par
+  <!--Toolbar -->\par
+    <div class="glass transcript-toolbar">\par
+      <div class="search-wrap">\par
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>\par
+        <input type="text" class="search-input" id="transcript-search" placeholder="Search transcript…">\par
+      </div>\par
+      <label class="speaker-toggle">\par
+        <div class="toggle-sw on" id="speaker-sw"></div>\par
+        <span>Speaker Labels</span>\par
+      </label>\par
+      <button class="btn-secondary" onclick="copyTranscript()">📋 Copy</button>\par
+      <button class="btn-secondary" onclick="downloadTranscript()">⬇️ Download</button>\par
+    </div>\par
+    <!--Body -->\par
+  <div class="transcript-body" id="transcript-lines">\par
+    $\{renderTranscriptLines(lines)\}\par
+  </div>\par
+`;\par
+\par
+  // Search\par
+  $('transcript-search').addEventListener('input', e => \{\par
+    highlightSearch(e.target.value.trim(), $('transcript-lines').querySelectorAll('.transcript-line'));\par
+  \});\par
+\par
+  // Speaker toggle\par
+  $('speaker-sw').addEventListener('click', function () \{\par
+    state.speakerLabels = !state.speakerLabels;\par
+    this.classList.toggle('on', state.speakerLabels);\par
+    $('transcript-lines').querySelectorAll('.ts-speaker').forEach(el => \{\par
+      el.style.display = state.speakerLabels ? '' : 'none';\par
+    \});\par
+  \});\par
+\}\par
+\par
+function renderTranscriptLines(lines) \{\par
+  if (!lines.length) return '<p style="color:var(--text-muted);padding:16px;">No transcript available.</p>';\par
+  return lines.map(line => `\par
+  <div class="transcript-line" data-text="$\{escapeHtml(line.text.toLowerCase())\}">\par
+      <span class="ts-time">$\{line.time\}</span>\par
+      <span class="ts-speaker">$\{line.speaker\}</span>\par
+      <span class="ts-text">$\{escapeHtml(line.text)\}</span>\par
+    </div>\par
+  `).join('');\par
+\}\par
+\par
+function highlightSearch(query, lines) \{\par
+  lines.forEach(line => \{\par
+    const textSpan = line.querySelector('.ts-text');\par
+    const raw = state.transcriptData?.find(l => l.text.toLowerCase() === line.dataset.text)?.text || textSpan.textContent;\par
+    if (!query) \{\par
+      textSpan.innerHTML = escapeHtml(raw);\par
+      line.classList.remove('highlight');\par
+      return;\par
+    \}\par
+    const regex = new RegExp(`($\{escapeRegex(query)\})`, 'gi');\par
+    const highlighted = escapeHtml(raw).replace(regex, '<mark>$1</mark>');\par
+    textSpan.innerHTML = highlighted;\par
+    line.classList.toggle('highlight', regex.test(raw));\par
+  \});\par
+\}\par
+\par
+function copyTranscript() \{\par
+  const text = (state.transcriptData || []).map(l => `[$\{l.time\}] $\{l.speaker\}: $\{l.text\} `).join('\\n');\par
+  copyText(text, 'Transcript copied!');\par
+\}\par
+function downloadTranscript() \{\par
+  const text = (state.transcriptData || []).map(l => `[$\{l.time\}] $\{l.speaker\}: $\{l.text\} `).join('\\n');\par
+  downloadText(text, 'transcript.txt');\par
+\}\par
+\par
+// ═══════════════════════════════════════════\par
+// MODAL\par
+// ═══════════════════════════════════════════\par
+function initModal() \{\par
+  const modal = $('how-modal');\par
+  $('how-btn').addEventListener('click', () => \{\par
+    modal.classList.add('open');\par
+    document.body.style.overflow = 'hidden';\par
+  \});\par
+  $('modal-close').addEventListener('click', closeModal);\par
+  modal.addEventListener('click', e => \{ if (e.target === modal) closeModal(); \});\par
+  document.addEventListener('keydown', e => \{ if (e.key === 'Escape') closeModal(); \});\par
+\}\par
+function closeModal() \{\par
+  $('how-modal').classList.remove('open');\par
+  document.body.style.overflow = '';\par
+\}\par
+\par
+// ═══════════════════════════════════════════\par
+// TOAST\par
+// ═══════════════════════════════════════════\par
+function showToast(msg, type = 'info') \{\par
+  const container = $('toast-container');\par
+  const toast = document.createElement('div');\par
+  toast.className = `toast $\{type\} `;\par
+  toast.innerHTML = `<span class="toast-icon"></span> <span>$\{msg\}</span>`;\par
+  container.appendChild(toast);\par
+  setTimeout(() => \{\par
+    toast.classList.add('removing');\par
+    setTimeout(() => toast.remove(), 300);\par
+  \}, 3200);\par
+\}\par
+\par
+// ═══════════════════════════════════════════\par
+// ERROR CARD\par
+// ═══════════════════════════════════════════\par
+function showErrorCard(container, title, message) \{\par
+  const card = document.createElement('div');\par
+  card.className = 'error-card';\par
+  card.innerHTML = `\par
+  <span class="err-icon">⚠️</span>\par
+    <div><h4>$\{title\}</h4><p>$\{message\}</p></div>\par
+`;\par
+  container.prepend(card);\par
+\}\par
+\par
+// ═══════════════════════════════════════════\par
+// SUMMARIZE TAB INIT ON TAB SWITCH\par
+// ═══════════════════════════════════════════\par
+function initSummarizeTabOnSwitch() \{\par
+  if (state.phase !== 'ready') return;\par
+  const sc = $('summarize-content');\par
+  if (!sc.querySelector('.summarize-grid')) \{\par
+    renderSummarizeUI();\par
+  \}\par
+\}\par
+\par
+// Override switchTab to trigger summarize render\par
+const _originalSwitch = typeof switchTab !== 'undefined' ? null : null;\par
+document.addEventListener('DOMContentLoaded', () => \{\par
+  $$('.tab-btn').forEach(btn => \{\par
+    btn.addEventListener('click', () => \{\par
+      if (btn.dataset.tab === 'summarize') \{\par
+        setTimeout(initSummarizeTabOnSwitch, 10);\par
+      \}\par
+    \});\par
+  \});\par
+\});\par
+\par
+// ═══════════════════════════════════════════\par
+// UTILITY\par
+// ═══════════════════════════════════════════\par
+function copyText(text, msg = 'Copied!') \{\par
+  navigator.clipboard.writeText(text).then(() => showToast(msg, 'success')).catch(() => \{\par
+    // Fallback\par
+    const ta = document.createElement('textarea');\par
+    ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';\par
+    document.body.appendChild(ta); ta.select();\par
+    document.execCommand('copy'); ta.remove();\par
+    showToast(msg, 'success');\par
+  \});\par
+\}\par
+\par
+function downloadText(text, filename) \{\par
+  const url = URL.createObjectURL(new Blob([text], \{ type: 'text/plain' \}));\par
+  const a = document.createElement('a');\par
+  a.href = url; a.download = filename;\par
+  document.body.appendChild(a); a.click();\par
+  document.body.removeChild(a);\par
+  URL.revokeObjectURL(url);\par
+  showToast(`Downloaded $\{filename\} `, 'success');\par
+\}\par
+\par
+function escapeHtml(str) \{\par
+  return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');\par
+\}\par
+\par
+function escapeRegex(str) \{\par
+  return str.replace(/[.*+?^$\{\}()|[\\]\\\\]/g, '\\\\$&');\par
+\}\par
+\par\par}
+
+{\b\f0\fs28 api.js\par}
+{\f1\fs20 // api.js – API integration layer with mock fallback\par
+// ─────────────────────────────────────────────────────────────────────────────\par
+// MOCK_MODE: Set to `true`  → uses realistic demo data (no backend needed)\par
+//            Set to `false` → calls the real FastAPI backend at API_BASE\par
+// ─────────────────────────────────────────────────────────────────────────────\par
+\par
+const MOCK_MODE = false;             // ← Set to true to use demo data without backend\par
+// For cloud deployment, use the current host. For local dev, use localhost:8000\par
+const API_BASE = window.location.origin.includes("localhost") || window.location.origin.includes("127.0.0.1") \par
+    ? "http://localhost:8000" \par
+    : window.location.origin;\par
+\par
+let _sessionId = sessionStorage.getItem('vqa-session-id') || null;\par
+\par
+// ── Internal helpers ─────────────────────────────────────────\par
+\par
+async function apiFetch(path, options = \{\}) \{\par
+    const res = await fetch(`$\{API_BASE\}$\{path\}`, \{\par
+        headers: \{ "Content-Type": "application/json", ...options.headers \},\par
+        ...options,\par
+    \});\par
+    if (!res.ok) \{\par
+        const text = await res.text().catch(() => "Unknown error");\par
+        throw new Error(`API $\{res.status\}: $\{text\}`);\par
+    \}\par
+    return res.json();\par
+\}\par
+\par
+// ── processVideo ─────────────────────────────────────────────\par
+/**\par
+ * Upload and process a video.\par
+ * @param \{File\}     file\par
+ * @param \{string\}   videoUrl\par
+ * @param \{string\}   language  – "English" | "Hindi" | "Telugu" | "Spanish" …\par
+ * @param \{string\}   mode      – "fast" | "full"\par
+ * @param \{string\}   startTime\par
+ * @param \{string\}   endTime\par
+ * @param \{string\}   manualFrames\par
+ * @param \{Function\} onProgress – (label: string, pct: number) => void\par
+ * @returns  \{ session_id, transcript, visuals, duration \}\par
+ */\par
+async function apiProcessVideo(file, videoUrl, language, mode, startTime, endTime, manualFrames, onProgress) \{\par
+    if (MOCK_MODE) \{\par
+        const steps = [\par
+            \{ label: "Extracting audio", pct: 20 \},\par
+            \{ label: "Transcribing speech", pct: 40 \},\par
+            \{ label: "Understanding visuals", pct: 60 \},\par
+            \{ label: "Generating answer model", pct: 80 \},\par
+            \{ label: "Creating summaries", pct: 100 \},\par
+        ];\par
+        for (const step of steps) \{\par
+            await mockDelay(700 + Math.random() * 500);\par
+            if (onProgress) onProgress(step.label, step.pct);\par
+        \}\par
+        _sessionId = MOCK_DATA.processVideo.session_id;\par
+        return MOCK_DATA.processVideo;\par
+    \}\par
+\par
+    // ── Real backend ──────────────────────────────────────────\par
+    if (onProgress) onProgress("Uploading video…", 5);\par
+\par
+    const form = new FormData();\par
+    if (file) \{\par
+        form.append("video", file);\par
+    \}\par
+    if (videoUrl) \{\par
+        form.append("video_url", videoUrl);\par
+    \}\par
+    form.append("language", language);\par
+    form.append("mode", mode);\par
+    if (startTime) form.append("start_time", startTime);\par
+    if (endTime) form.append("end_time", endTime);\par
+    if (manualFrames) form.append("manual_frames", manualFrames);\par
+\par
+    if (onProgress) onProgress("Extracting audio", 15);\par
+\par
+    const res = await fetch(`$\{API_BASE\}/process_video`, \{\par
+        method: "POST",\par
+        body: form,\par
+        // Note: do NOT set Content-Type here – browser sets multipart boundary\par
+    \});\par
+\par
+    if (!res.ok) \{\par
+        const err = await res.json().catch(() => (\{ detail: "Unknown error" \}));\par
+        throw new Error(err.detail || `Server error $\{res.status\}`);\par
+    \}\par
+\par
+    if (onProgress) onProgress("Finalising…", 95);\par
+    const data = await res.json();\par
+\par
+    _sessionId = data.session_id;\par
+    sessionStorage.setItem('vqa-session-id', _sessionId);\par
+    if (onProgress) onProgress("Complete", 100);\par
+    return data;\par
+\}\par
+\par
+// ── askQuestion ───────────────────────────────────────────────\par
+/**\par
+ * Ask a question about the processed video.\par
+ * @returns \{ answer, confidence, evidence, clip \}\par
+ */\par
+async function apiAsk(question, language = "English") \{\par
+    if (MOCK_MODE) \{\par
+        await mockDelay(1400);\par
+        return MOCK_DATA.ask(question);\par
+    \}\par
+    return apiFetch("/ask", \{\par
+        method: "POST",\par
+        body: JSON.stringify(\{\par
+            question,\par
+            session_id: _sessionId,\par
+            language,\par
+        \}),\par
+    \});\par
+\}\par
+\par
+// ── summarizeVideo ────────────────────────────────────────────\par
+/**\par
+ * Summarize the video.\par
+ * @param \{string\} length – "short" | "detailed" | "chapters"\par
+ * @returns \{ short, detailed, chapters \}\par
+ */\par
+async function apiSummarizeVideo(length = "short") \{\par
+    if (MOCK_MODE) \{\par
+        await mockDelay(1200);\par
+        return MOCK_DATA.summarizeVideo;\par
+    \}\par
+    return apiFetch("/summarize_video", \{\par
+        method: "POST",\par
+        body: JSON.stringify(\{ session_id: _sessionId, length \}),\par
+    \});\par
+\}\par
+\par
+// ── summarizeTranscript ───────────────────────────────────────\par
+/**\par
+ * Summarize the transcript into key points, action items, and keywords.\par
+ * @returns \{ key_points, action_items, keywords \}\par
+ */\par
+async function apiSummarizeTranscript() \{\par
+    if (MOCK_MODE) \{\par
+        await mockDelay(1000);\par
+        return MOCK_DATA.summarizeTranscript;\par
+    \}\par
+    return apiFetch("/summarize_transcript", \{\par
+        method: "POST",\par
+        body: JSON.stringify(\{ session_id: _sessionId \}),\par
+    \});\par
+\}\par
+\par
+// ── download helpers ──────────────────────────────────────────\par
+/**\par
+ * Returns the full download URL for a clip or transcript.\par
+ * In mock mode, returns null (handled client-side).\par
+ */\par
+function apiClipUrl(filename) \{\par
+    if (MOCK_MODE || !filename) return null;\par
+    return `$\{API_BASE\}/download/clip/$\{filename\}`;\par
+\}\par
+\par
+function apiTranscriptDownloadUrl() \{\par
+    if (MOCK_MODE || !_sessionId) return null;\par
+    return `$\{API_BASE\}/download/transcript/$\{_sessionId\}`;\par
+\}\par
+\par
+// ── Session helpers ───────────────────────────────────────────\par
+function getSessionId() \{ return _sessionId; \}\par
+function clearSessionId() \{ _sessionId = null; sessionStorage.removeItem('vqa-session-id'); \}\par
+\par\par}
+
+{\b\f0\fs28 mock.js\par}
+{\f1\fs20 // mock.js – Realistic mock data for VideoQA demo mode\par
+\par
+const MOCK_DATA = \{\par
+  processVideo: \{\par
+    status: "success",\par
+    session_id: "demo-session-001",\par
+    duration: 142.5,\par
+    language: "en",\par
+    transcript: [\par
+      \{ time: "0:00", speaker: "Speaker 1", text: "Welcome to this tutorial on machine learning fundamentals." \},\par
+      \{ time: "0:08", speaker: "Speaker 1", text: "Today we will explore the core concepts that drive modern AI systems." \},\par
+      \{ time: "0:17", speaker: "Speaker 1", text: "Let's start with supervised learning, where the model learns from labeled data." \},\par
+      \{ time: "0:28", speaker: "Speaker 2", text: "That's a great starting point. Can you explain how the training loop works?" \},\par
+      \{ time: "0:35", speaker: "Speaker 1", text: "Absolutely. In each iteration, the model makes a prediction, we compute the loss, and then we backpropagate the error." \},\par
+      \{ time: "0:50", speaker: "Speaker 1", text: "The optimizer then adjusts the weights to minimize the loss function." \},\par
+      \{ time: "1:02", speaker: "Speaker 2", text: "And what about overfitting? How do we prevent the model from memorizing training data?" \},\par
+      \{ time: "1:12", speaker: "Speaker 1", text: "Great question. We use techniques like dropout, regularization, and data augmentation." \},\par
+      \{ time: "1:24", speaker: "Speaker 1", text: "Cross-validation is also critical to evaluate generalization." \},\par
+      \{ time: "1:38", speaker: "Speaker 1", text: "In conclusion, understanding these fundamentals is essential for building robust ML systems." \},\par
+      \{ time: "1:52", speaker: "Speaker 1", text: "Thank you for watching. In the next video, we will cover deep neural networks in detail." \},\par
+      \{ time: "2:05", speaker: "Speaker 2", text: "Looking forward to it. That was a very clear explanation." \},\par
+    ],\par
+    visuals: [\par
+      \{ time: "0:00", caption: "Title slide: 'Machine Learning Fundamentals'" \},\par
+      \{ time: "0:17", caption: "Diagram showing supervised vs unsupervised learning" \},\par
+      \{ time: "0:35", caption: "Animation of forward pass through a neural network" \},\par
+      \{ time: "0:50", caption: "Graph showing loss decreasing over training epochs" \},\par
+      \{ time: "1:12", caption: "Slide listing regularization techniques: L1, L2, Dropout" \},\par
+      \{ time: "1:38", caption: "Comparison chart of train vs validation accuracy" \},\par
+    ]\par
+  \},\par
+\par
+  ask: (question) => (\{\par
+    status: "success",\par
+    question,\par
+    answer: `Based on the transcript and visual frames, the speaker explains this clearly around the middle section of the video.\\n\\nThe key explanation revolves around the **training loop** and how the model iteratively improves. Specifically, the speaker describes: (1) making a prediction, (2) computing the loss, and (3) backpropagating the error to update weights via an optimizer.\\n\\nThe visual frames at that point show a neural network animation, which reinforces the audio explanation. The speaker also emphasizes that understanding the loss function is fundamental to training any machine learning model effectively.`,\par
+    confidence: "High – based on transcript excerpt + 3 matching visual frames",\par
+    evidence: \{\par
+      transcript_excerpts: [\par
+        "In each iteration, the model makes a prediction, we compute the loss, and then we backpropagate the error.",\par
+        "The optimizer then adjusts the weights to minimize the loss function."\par
+      ],\par
+      visual_captions: [\par
+        "Animation of forward pass through a neural network",\par
+        "Graph showing loss decreasing over training epochs"\par
+      ]\par
+    \},\par
+    clip: \{\par
+      start: 35,\par
+      end: 55,\par
+      url: null, // will use placeholder\par
+      label: "0:35 – 0:55 – Training Loop Explanation"\par
+    \}\par
+  \}),\par
+\par
+  summarizeVideo: \{\par
+    short: "This video is an introductory tutorial on machine learning fundamentals, covering supervised learning, the training loop, loss functions, and techniques to prevent overfitting. The presenter delivers a clear, structured explanation supported by slides and animations.",\par
+    detailed: [\par
+      "Introduction and overview of machine learning fundamentals (0:00–0:17)",\par
+      "Explanation of supervised learning with labeled data and its applications (0:17–0:28)",\par
+      "Detailed walkthrough of the training loop: prediction → loss → backpropagation → weight update (0:35–0:55)",\par
+      "Role of the optimizer in minimizing the loss function during training (0:50–1:02)",\par
+      "Preventing overfitting using dropout, regularization, data augmentation, and cross-validation (1:02–1:38)",\par
+      "Conclusion emphasizing the importance of ML fundamentals and preview of next topic (1:38–2:05)"\par
+    ],\par
+    chapters: [\par
+      \{ time: "0:00", title: "Introduction" \},\par
+      \{ time: "0:17", title: "Supervised Learning" \},\par
+      \{ time: "0:35", title: "The Training Loop" \},\par
+      \{ time: "1:02", title: "Preventing Overfitting" \},\par
+      \{ time: "1:38", title: "Conclusion & Next Steps" \}\par
+    ]\par
+  \},\par
+\par
+  summarizeTranscript: \{\par
+    key_points: [\par
+      "Machine learning models learn from labeled data in supervised learning.",\par
+      "The training loop involves: predict → compute loss → backpropagate → update weights.",\par
+      "Optimizers minimize the loss function to improve model accuracy.",\par
+      "Overfitting is prevented using dropout, regularization, and data augmentation.",\par
+      "Cross-validation is essential for evaluating model generalization.",\par
+      "The video concludes by previewing a future session on deep neural networks."\par
+    ],\par
+    action_items: [\par
+      "Review backpropagation math for deeper understanding.",\par
+      "Experiment with different regularization techniques on a sample dataset.",\par
+      "Watch the follow-up video on deep neural networks."\par
+    ],\par
+    keywords: [\par
+      "Machine Learning", "Supervised Learning", "Training Loop", "Loss Function",\par
+      "Backpropagation", "Optimizer", "Overfitting", "Dropout", "Regularization",\par
+      "Data Augmentation", "Cross-Validation", "Neural Network", "Deep Learning"\par
+    ]\par
+  \}\par
+\};\par
+\par
+// Simulate async delay\par
+function mockDelay(ms = 1200) \{\par
+  return new Promise(resolve => setTimeout(resolve, ms));\par
+\}\par
+\par\par}
+
+{\b\f0\fs28 main.py\par}
+{\f1\fs20 """\par
+main.py – VideoQA FastAPI Backend\par
+Endpoints: /process_video, /ask, /summarize_video, /summarize_transcript, /download/\{type\}\par
+"""\par
+\par
+import os\par
+import time\par
+import uuid\par
+import shutil\par
+from pathlib import Path\par
+from typing import Optional\par
+import yt_dlp\par
+\par
+# Triggering reload\par
+from fastapi import FastAPI, File, Form, UploadFile, HTTPException, BackgroundTasks\par
+from fastapi.middleware.cors import CORSMiddleware\par
+from fastapi.staticfiles import StaticFiles\par
+from fastapi.responses import FileResponse, JSONResponse\par
+from pydantic import BaseModel\par
+from dotenv import load_dotenv\par
+\par
+from models import save_session, get_session, get_model_status\par
+from video_utils import (\par
+    extract_audio,\par
+    extract_keyframes,\par
+    extract_specific_frames,\par
+    caption_frames,\par
+    extract_clip,\par
+    find_clip_timestamps,\par
+)\par
+from llm import answer_question, summarize_video, summarize_transcript\par
+\par
+load_dotenv()\par
+\par
+# ── App Setup ────────────────────────────────────────────────\par
+app = FastAPI(\par
+    title="VideoQA API",\par
+    description="Multimodal Video Question Answering – Whisper + BLIP + Mistral",\par
+    version="1.0.0",\par
+)\par
+\par
+# Allow the file:// frontend and localhost dev servers\par
+app.add_middleware(\par
+    CORSMiddleware,\par
+    allow_origins=["*"],          # In production, restrict to your domain\par
+    allow_credentials=True,\par
+    allow_methods=["*"],\par
+    allow_headers=["*"],\par
+)\par
+\par
+# Temp directory for uploads / outputs\par
+UPLOAD_DIR = Path("uploads")\par
+OUTPUT_DIR = Path("outputs")\par
+UPLOAD_DIR.mkdir(exist_ok=True)\par
+OUTPUT_DIR.mkdir(exist_ok=True)\par
+\par
+\par
+# ── Pydantic models ──────────────────────────────────────────\par
+\par
+class AskRequest(BaseModel):\par
+    question: str\par
+    session_id: str\par
+    language: Optional[str] = "English"\par
+    model: Optional[str] = None   # None → use DEFAULT_MODEL from .env\par
+\par
+class SummarizeVideoRequest(BaseModel):\par
+    session_id: str\par
+    length: Optional[str] = "short"   # "short" | "detailed" | "chapters"\par
+    model: Optional[str] = None\par
+\par
+class SummarizeTranscriptRequest(BaseModel):\par
+    session_id: str\par
+    model: Optional[str] = None\par
+\par
+\par
+# ── Health Check ─────────────────────────────────────────────\par
+\par
+@app.get("/health")\par
+def health():\par
+    return \{"status": "ok", "service": "VideoQA API"\}\par
+\par
+\par
+# ── Model Status ──────────────────────────────────────────────\par
+\par
+@app.get("/status")\par
+def status():\par
+    """\par
+    Returns the load status of AI models (Whisper, BLIP).\par
+    Use this to check if models are loaded before processing.\par
+    """\par
+    model_info = get_model_status()\par
+    all_ready = all(\par
+        v["status"] == "ready"\par
+        for k, v in model_info.items()\par
+        if isinstance(v, dict) and "status" in v\par
+    )\par
+    return \{\par
+        "ready": all_ready,\par
+        "models": model_info,\par
+    \}\par
+\par
+\par
+# ── POST /process_video ──────────────────────────────────────\par
+\par
+@app.post("/process_video")\par
+async def process_video(\par
+    video:    Optional[UploadFile] = File(None),\par
+    video_url: Optional[str]       = Form(None),\par
+    language: str                  = Form("English"),\par
+    mode:     str                  = Form("fast"),      # "fast" | "full"\par
+    start_time: Optional[float]    = Form(None),\par
+    end_time:   Optional[float]    = Form(None),\par
+    manual_frames: Optional[str]   = Form(None),\par
+):\par
+    """\par
+    1. Save uploaded video\par
+    2. Extract audio → transcribe with Whisper-base (fast)\par
+    3. Extract keyframes → caption with BLIP-base\par
+    4. Store session data\par
+    Returns: \{ session_id, duration, transcript (list), visuals (list), status \}\par
+    """\par
+    t_pipeline = time.time()\par
+    session_id = str(uuid.uuid4())\par
+    session_dir = UPLOAD_DIR / session_id\par
+    session_dir.mkdir(parents=True, exist_ok=True)\par
+\par
+    if not video and not video_url:\par
+        raise HTTPException(status_code=400, detail="Must provide either a video file or a video URL")\par
+\par
+    print(f"\\n[VideoQA] -- New session: \{session_id[:8]\} | lang=\{language\} | mode=\{mode\}")\par
+    t0 = time.time()\par
+\par
+    if video_url:\par
+        print(f"[VideoQA] Downloading video from URL: \{video_url\}")\par
+        browser = os.getenv("YOUTUBE_BROWSER", "chrome")\par
+        ydl_opts = \{\par
+            'format': 'best[ext=mp4]/best',\par
+            'outtmpl': str(session_dir / 'downloaded_video.%(ext)s'),\par
+            'quiet': True,\par
+            'no_warnings': True,\par
+            'extractor_args': \{'youtube': ['player_client=android,tv,ios']\},\par
+        \}\par
+        \par
+        cookie_file = Path("cookies.txt")\par
+        env_cookies = os.getenv("YOUTUBE_COOKIES_SECRET")\par
+        if env_cookies and not cookie_file.exists():\par
+            try:\par
+                cookie_file.write_text(env_cookies, encoding="utf-8")\par
+            except Exception:\par
+                pass\par
+                \par
+        if cookie_file.exists():\par
+            ydl_opts['cookiefile'] = str(cookie_file)\par
+        elif browser and browser.lower() != "none" and browser.lower() != "false":\par
+            ydl_opts['cookiesfrombrowser'] = (browser,)\par
+\par
+        def download_with_opts():\par
+            with yt_dlp.YoutubeDL(ydl_opts) as ydl:\par
+                info = ydl.extract_info(video_url, download=True)\par
+                ext = info.get('ext', 'mp4')\par
+                return str(session_dir / f"downloaded_video.\{ext\}")\par
+\par
+        try:\par
+            try:\par
+                video_path = download_with_opts()\par
+            except Exception as e:\par
+                # If cookie extraction failed, retry without cookies\par
+                if 'cookiesfrombrowser' in ydl_opts:\par
+                    print(f"[VideoQA] Cookie extraction failed (\{e\}), retrying without cookies...")\par
+                    del ydl_opts['cookiesfrombrowser']\par
+                    video_path = download_with_opts()\par
+                else:\par
+                    raise e\par
+            print(f"[VideoQA] Video downloaded in \{round(time.time()-t0,1)\}s")\par
+        except Exception as e:\par
+            shutil.rmtree(str(session_dir), ignore_errors=True)\par
+            err_msg = str(e)\par
+            \par
+            is_youtube = "youtube.com" in video_url.lower() or "youtu.be" in video_url.lower()\par
+            if is_youtube and ("Sign in to confirm" in err_msg or "bot" in err_msg.lower()):\par
+                err_msg = ("YouTube has blocked the download (Bot Detection). "\par
+                           "Please export your YouTube cookies using the 'Get cookies.txt LOCALLY' extension "\par
+                           "and save them as 'cookies.txt' in the 'backend' folder.")\par
+            elif "huggingface.co" in video_url.lower():\par
+                err_msg = f"Hugging Face download failed (likely due to a private repository or bot protection). Please download the video manually and upload the file instead. Original error: \{err_msg\}"\par
+                \par
+            raise HTTPException(status_code=400, detail=f"Failed to download video URL: \{err_msg\}")\par
+    else:\par
+        video_path = str(session_dir / video.filename)\par
+        with open(video_path, "wb") as f:\par
+            content = await video.read()\par
+            f.write(content)\par
+        print(f"[VideoQA] Video saved (\{len(content)/1024/1024:.1f\} MB) in \{round(time.time()-t0,1)\}s")\par
+\par
+    try:\par
+        # ── Step 1: Audio → Transcript ──────────────────────\par
+        audio_path = str(session_dir / "audio.wav")\par
+        extract_audio(video_path, audio_path, start_time, end_time)\par
+\par
+        from models import get_whisper\par
+        model_wh = get_whisper()\par
+\par
+        print(f"[VideoQA] Transcribing audio (lang=\{_lang_code(language)\})...")\par
+        t0 = time.time()\par
+        # Request word-level timestamps for better clip matching\par
+        result = model_wh.transcribe(\par
+            audio_path,\par
+            language=_lang_code(language),\par
+            word_timestamps=False,  # per-segment timestamps are enough\par
+        )\par
+        print(f"[VideoQA] Transcription done in \{round(time.time()-t0,1)\}s")\par
+\par
+        full_text = result["text"].strip()\par
+        segments  = result.get("segments", [])\par
+        print(f"[VideoQA] Transcript: \{len(segments)\} segments, \{len(full_text)\} chars")\par
+\par
+        # Format transcript lines for frontend\par
+        transcript_lines = []\par
+        offset = start_time or 0.0\par
+        for seg in segments:\par
+            seg["start"] = seg.get("start", 0) + offset\par
+            seg["end"] = seg.get("end", 0) + offset\par
+            start = seg["start"]\par
+            end   = seg["end"]\par
+            text  = seg.get("text", "").strip()\par
+            if text:\par
+                transcript_lines.append(\{\par
+                    "time":    _fmt_time(start),\par
+                    "start":   start,\par
+                    "end":     end,\par
+                    "speaker": "Speaker",   # speaker diarization would need pyannote\par
+                    "text":    text,\par
+                \})\par
+\par
+        # Get video duration\par
+        duration = segments[-1]["end"] if segments else (end_time or 0.0)\par
+\par
+        # ── Step 2: Keyframes → Visual Captions ────────────\par
+        from models import get_model_status as _ms\par
+        \par
+        t0 = time.time()\par
+        if manual_frames and manual_frames.strip():\par
+            timestamps = [float(x.strip()) for x in manual_frames.split(",") if x.strip()]\par
+            print(f"[VideoQA] Extracting \{len(timestamps)\} manual frames...")\par
+            frame_paths = extract_specific_frames(video_path, timestamps)\par
+        else:\par
+            max_frames = int(os.getenv("MAX_FRAMES", "3"))\par
+            n_frames = max_frames if mode == "full" else max(2, max_frames - 1)\par
+            print(f"[VideoQA] Extracting \{n_frames\} keyframes...")\par
+            frame_paths = extract_keyframes(video_path, n=n_frames, start_sec=start_time, end_sec=end_time)\par
+            \par
+        print(f"[VideoQA] Frames extracted in \{round(time.time()-t0,1)\}s")\par
+        captioned   = caption_frames(frame_paths)\par
+\par
+        visuals = []\par
+        for item in captioned:\par
+            # Note: For manual frames, caption might display `time` incorrectly if we just use `frame_index / fps`. We will let `extract_specific_frames` return the timestamp in `frame_index` or handle it properly. Wait, `frame_index` can just be the timestamp in seconds scaled up. Actually, we can return `\{path, timestamp\}` from `extract_specific_frames`, but wait, `caption_frames` reads `frame_\{idx\}.jpg`. It might be easier to just format `time` based on the frame index if `extracted_frames` works similarly. Let's adjust this.\par
+            visuals.append(\{\par
+                "time":    _fmt_time(item.get("frame_index", 0) / 25.0),  # This will be updated inside video_utils\par
+                "caption": item["caption"],\par
+            \})\par
+\par
+        # ── Save Session ────────────────────────────────────\par
+        save_session(session_id, \{\par
+            "video_path":  video_path,\par
+            "audio_path":  audio_path,\par
+            "full_text":   full_text,\par
+            "segments":    segments,\par
+            "transcript":  transcript_lines,\par
+            "visuals":     visuals,\par
+            "duration":    duration,\par
+            "language":    language,\par
+        \})\par
+\par
+        # Cleanup frames dir\par
+        shutil.rmtree("frames", ignore_errors=True)\par
+        print(f"[VideoQA] Pipeline complete in \{round(time.time()-t_pipeline,1)\}s total\\n")\par
+\par
+        return \{\par
+            "status":      "success",\par
+            "session_id":  session_id,\par
+            "duration":    duration,\par
+            "transcript":  transcript_lines,\par
+            "visuals":     visuals,\par
+            "language":    language,\par
+        \}\par
+\par
+    except Exception as e:\par
+        shutil.rmtree(str(session_dir), ignore_errors=True)\par
+        print(f"[VideoQA] Pipeline failed after \{round(time.time()-t_pipeline,1)\}s: \{e\}")\par
+        raise HTTPException(status_code=500, detail=f"Processing failed: \{str(e)\}")\par
+\par
+\par
+\par
+# ── POST /ask ────────────────────────────────────────────────\par
+\par
+@app.post("/ask")\par
+async def ask(req: AskRequest):\par
+    """\par
+    Answer a question grounded in the video's transcript + visuals.\par
+    Returns: \{ answer, confidence, evidence, clip \}\par
+    """\par
+    session = get_session(req.session_id)\par
+    if not session:\par
+        raise HTTPException(status_code=404, detail="Session not found. Please process a video first.")\par
+\par
+    full_text = session["full_text"]\par
+    visuals   = session["visuals"]\par
+    segments  = session["segments"]\par
+    duration  = session["duration"]\par
+    language  = req.language or session.get("language", "English")\par
+    # Convert short code ('en') → display name ('English') for LLM prompt\par
+    language_display = _CODE_TO_NAME.get(language.lower(), language)\par
+\par
+    visuals_text = "\\n".join(\par
+        f"[\{v['time']\}] \{v['caption']\}" for v in visuals\par
+    )\par
+\par
+    try:\par
+        # ── LLM Answer ──────────────────────────────────────\par
+        result = answer_question(\par
+            question=req.question,\par
+            transcript=full_text,\par
+            visuals=visuals_text,\par
+            language=language_display,\par
+            model=req.model,\par
+        )\par
+\par
+        # ── Clip Retrieval ───────────────────────────────────\par
+        clip_start, clip_end = find_clip_timestamps(\par
+            transcript_segments=segments,\par
+            question=req.question,\par
+            video_duration=duration,\par
+        )\par
+\par
+        clip_label = f"\{_fmt_time(clip_start)\} – \{_fmt_time(clip_end)\}"\par
+\par
+        # Extract clip and save\par
+        clip_filename = f"clip_\{req.session_id[:8]\}.mp4"\par
+        clip_out_path = str(OUTPUT_DIR / clip_filename)\par
+\par
+        try:\par
+            extract_clip(session["video_path"], clip_start, clip_end, clip_out_path)\par
+            clip_url = f"/download/clip/\{clip_filename\}"\par
+        except Exception:\par
+            clip_url = None\par
+\par
+        return \{\par
+            "status":   "success",\par
+            "question": req.question,\par
+            "answer":   result.get("answer", ""),\par
+            "confidence": f"\{result.get('confidence', 'Medium')\} – \{result.get('confidence_reason', 'Based on transcript + visual frames')\}",\par
+            "evidence": \{\par
+                "transcript_excerpts": result.get("transcript_excerpts", []),\par
+                "visual_captions":     result.get("visual_captions", []),\par
+            \},\par
+            "clip": \{\par
+                "start":  clip_start,\par
+                "end":    clip_end,\par
+                "url":    clip_url,\par
+                "label":  clip_label,\par
+            \},\par
+        \}\par
+\par
+    except Exception as e:\par
+        raise HTTPException(status_code=500, detail=f"QA failed: \{str(e)\}")\par
+\par
+\par
+# ── POST /summarize_video ─────────────────────────────────────\par
+\par
+@app.post("/summarize_video")\par
+async def summarize_video_endpoint(req: SummarizeVideoRequest):\par
+    """\par
+    Summarize the video content (short paragraph / detailed bullets / chapters).\par
+    Returns: \{ short, detailed, chapters \}\par
+    """\par
+    session = get_session(req.session_id)\par
+    if not session:\par
+        raise HTTPException(status_code=404, detail="Session not found.")\par
+\par
+    visuals_text = "\\n".join(\par
+        f"[\{v['time']\}] \{v['caption']\}" for v in session["visuals"]\par
+    )\par
+\par
+    try:\par
+        result = summarize_video(\par
+            transcript=session["full_text"],\par
+            visuals=visuals_text,\par
+            length=req.length or "short",\par
+            model=req.model,\par
+        )\par
+        return \{"status": "success", **result\}\par
+    except Exception as e:\par
+        raise HTTPException(status_code=500, detail=f"Summarization failed: \{str(e)\}")\par
+\par
+\par
+# ── POST /summarize_transcript ────────────────────────────────\par
+\par
+@app.post("/summarize_transcript")\par
+async def summarize_transcript_endpoint(req: SummarizeTranscriptRequest):\par
+    """\par
+    Extract key points, action items, and keywords from the transcript.\par
+    Returns: \{ key_points, action_items, keywords \}\par
+    """\par
+    session = get_session(req.session_id)\par
+    if not session:\par
+        raise HTTPException(status_code=404, detail="Session not found.")\par
+\par
+    try:\par
+        result = summarize_transcript(\par
+            transcript=session["full_text"],\par
+            model=req.model,\par
+        )\par
+        return \{"status": "success", **result\}\par
+    except Exception as e:\par
+        raise HTTPException(status_code=500, detail=f"Transcript summarization failed: \{str(e)\}")\par
+\par
+\par
+# ── GET /download/\{type\}/\{filename\} ───────────────────────────\par
+\par
+@app.get("/download/clip/\{filename\}")\par
+def download_clip(filename: str):\par
+    path = OUTPUT_DIR / filename\par
+    if not path.exists():\par
+        raise HTTPException(status_code=404, detail="Clip file not found.")\par
+    return FileResponse(\par
+        str(path),\par
+        media_type="video/mp4",\par
+        filename=filename,\par
+        headers=\{"Accept-Ranges": "bytes"\},\par
+    )\par
+\par
+\par
+@app.get("/download/transcript/\{session_id\}")\par
+def download_transcript(session_id: str):\par
+    session = get_session(session_id)\par
+    if not session:\par
+        raise HTTPException(status_code=404, detail="Session not found.")\par
+\par
+    lines = session.get("transcript", [])\par
+    text  = "\\n".join(f"[\{l['time']\}] \{l['speaker']\}: \{l['text']\}" for l in lines)\par
+\par
+    out_path = OUTPUT_DIR / f"transcript_\{session_id[:8]\}.txt"\par
+    out_path.write_text(text, encoding="utf-8")\par
+    return FileResponse(str(out_path), media_type="text/plain", filename="transcript.txt")\par
+\par
+\par
+@app.get("/download/summary/\{session_id\}")\par
+def download_summary(session_id: str, length: str = "short"):\par
+    """Proxy – summary must first be generated via /summarize_video."""\par
+    raise HTTPException(status_code=400, detail="Please generate summary first, then download from the frontend.")\par
+\par
+\par
+# ── Helpers ───────────────────────────────────────────────────\par
+\par
+def _fmt_time(seconds: float) -> str:\par
+    s = int(seconds)\par
+    m, s = divmod(s, 60)\par
+    return f"\{m\}:\{s:02d\}"\par
+\par
+\par
+_CODE_TO_NAME = \{\par
+    "en": "English",\par
+    "hi": "Hindi",\par
+    "te": "Telugu",\par
+    "ta": "Tamil",\par
+    "kn": "Kannada",\par
+    "ml": "Malayalam",\par
+    "mr": "Marathi",\par
+    "bn": "Bengali",\par
+    "pa": "Punjabi",\par
+    "gu": "Gujarati",\par
+    "ur": "Urdu",\par
+    "es": "Spanish",\par
+    "fr": "French",\par
+    "de": "German",\par
+    "zh": "Chinese",\par
+    "ar": "Arabic",\par
+    "ja": "Japanese",\par
+    "ko": "Korean",\par
+    "pt": "Portuguese",\par
+    "ru": "Russian",\par
+    "it": "Italian",\par
+\}\par
+\par
+_LANG_MAP = \{\par
+    "english":    "en",\par
+    "hindi":      "hi",\par
+    "telugu":     "te",\par
+    "tamil":      "ta",\par
+    "kannada":    "kn",\par
+    "malayalam":  "ml",\par
+    "marathi":    "mr",\par
+    "bengali":    "bn",\par
+    "punjabi":    "pa",\par
+    "gujarati":   "gu",\par
+    "urdu":       "ur",\par
+    "spanish":    "es",\par
+    "french":     "fr",\par
+    "german":     "de",\par
+    "chinese":    "zh",\par
+    "arabic":     "ar",\par
+    "japanese":   "ja",\par
+    "korean":     "ko",\par
+    "portuguese": "pt",\par
+    "russian":    "ru",\par
+    "italian":    "it",\par
+\}\par
+\par
+# Short ISO codes that are already valid for Whisper\par
+_VALID_SHORT_CODES = \{"en", "hi", "te", "ta", "kn", "ml", "mr", "bn", "pa", "gu", "ur",\par
+                      "es", "fr", "de", "zh", "ar", "ja", "ko", "pt", "ru", "it"\}\par
+\par
+def _lang_code(language: str) -> str | None:\par
+    """Accept either full names ('English') or short ISO codes ('en')."""\par
+    lang = language.strip()\par
+    # Already a valid short code\par
+    if lang.lower() in _VALID_SHORT_CODES:\par
+        return lang.lower()\par
+    # Full name mapping\par
+    return _LANG_MAP.get(lang.lower())\par
+\par
+\par
+# ── Frontend Static Files ──────────────────────────────────────\par
+# Mount the root directory to serve index.html, app.js, style.css in production\par
+STATIC_DIR = Path(__file__).parent.parent\par
+app.mount("/", StaticFiles(directory=str(STATIC_DIR), html=True), name="frontend")\par
+\par
+\par
+# ── Entry Point ────────────────────────────────────────────────\par
+\par
+if __name__ == "__main__":\par
+    import uvicorn\par
+    host = os.getenv("HOST", "0.0.0.0")\par
+    port = int(os.getenv("PORT", "8000"))\par
+    print(f"\\n\{'='*50\}")\par
+    print(f"  VideoQA Backend starting on http://\{host\}:\{port\}")\par
+    print(f"  Docs: http://localhost:\{port\}/docs")\par
+    print(f"\{'='*50\}\\n")\par
+    uvicorn.run("main:app", host=host, port=port, reload=True)\par
+\par\par}
+
+{\b\f0\fs28 llm.py\par}
+{\f1\fs20 """\par
+llm.py – OpenRouter LLM integration\par
+Supports multiple free models with automatic fallback on rate-limit (429) errors.\par
+"""\par
+\par
+import os\par
+import json\par
+import requests\par
+from dotenv import load_dotenv\par
+\par
+load_dotenv()\par
+\par
+OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY", "")\par
+DEFAULT_MODEL = os.getenv("LLM_MODEL", "meta-llama/llama-3.3-70b-instruct:free")\par
+OPENROUTER_URL = "https://openrouter.ai/api/v1/chat/completions"\par
+\par
+# ── Fallback chain: tried in order when a model is rate-limited or unavailable ──\par
+FREE_MODEL_FALLBACKS = [\par
+    "meta-llama/llama-3.3-70b-instruct:free",           # LLaMA 3.3 70B       – best quality\par
+    "google/gemma-3-27b-it:free",                        # Gemma 3 27B         – Google\par
+    "qwen/qwen-2.5-72b-instruct:free",                   # Qwen 2.5 72B        – Alibaba\par
+    "mistralai/mistral-small-3.1-24b-instruct:free",     # Mistral Small 24B   – fast\par
+    "nousresearch/hermes-3-llama-3.1-405b:free",         # Hermes 3 405B       – powerful\par
+    "nvidia/nemotron-nano-9b-v2:free",                   # Nemotron 9B         – NVIDIA\par
+    "deepseek/deepseek-r1-0528:free",                    # DeepSeek R1         – reasoning\par
+    "microsoft/phi-4:free",                              # Phi-4               – Microsoft\par
+    "openai/gpt-oss-20b:free",                           # GPT-OSS 20B         – OpenAI open\par
+    "meta-llama/llama-3.2-3b-instruct:free",             # LLaMA 3.2 3B        – lightest\par
+]\par
+\par
+# ── Available open-source models (all free on OpenRouter) ────\par
+SUPPORTED_MODELS = \{\par
+    "llama-3.3-70b":    FREE_MODEL_FALLBACKS[0],\par
+    "gemma-3-27b":      FREE_MODEL_FALLBACKS[1],\par
+    "qwen-2.5-72b":     FREE_MODEL_FALLBACKS[2],\par
+    "mistral-small":    FREE_MODEL_FALLBACKS[3],\par
+    "hermes-405b":      FREE_MODEL_FALLBACKS[4],\par
+    "nemotron-9b":      FREE_MODEL_FALLBACKS[5],\par
+    "deepseek-r1":      FREE_MODEL_FALLBACKS[6],\par
+    "phi-4":            FREE_MODEL_FALLBACKS[7],\par
+    "gpt-oss-20b":      FREE_MODEL_FALLBACKS[8],\par
+    "llama-3.2-3b":     FREE_MODEL_FALLBACKS[9],\par
+\}\par
+\par
+\par
+# ── Single model call ────────────────────────────────────────\par
+\par
+def _call_single(messages: list[dict], model: str, temperature: float) -> str:\par
+    """Call one specific model. Raises RateLimitError on 429, SkipModelError on 404, RuntimeError otherwise."""\par
+    \par
+    # -- KEYLESS FALLBACK --\par
+    # If the user hasn't set an OpenRouter key yet, we silently and safely fall back \par
+    # to pollinations.ai, a completely free, keyless wrapper for Llama 3 / OpenAI.\par
+    if not OPENROUTER_API_KEY:\par
+        url = "https://text.pollinations.ai/openai"\par
+        headers = \{"Content-Type": "application/json"\}\par
+        # Pollinations supports 'openai', 'llama', 'mistral', 'searchgpt'\par
+        if "llama" in model.lower():\par
+            req_model = "llama"\par
+        elif "mistral" in model.lower() or "mixtral" in model.lower():\par
+            req_model = "mistral"\par
+        else:\par
+            req_model = "openai" # GPT-4o fallback\par
+    else:\par
+        url = OPENROUTER_URL\par
+        headers = \{\par
+            "Authorization": f"Bearer \{OPENROUTER_API_KEY\}",\par
+            "Content-Type":  "application/json",\par
+            "HTTP-Referer":  "https://videoqa.local",\par
+            "X-Title":       "VideoQA",\par
+        \}\par
+        req_model = model\par
+\par
+    resp = requests.post(\par
+        url,\par
+        headers=headers,\par
+        json=\{\par
+            "model":       req_model,\par
+            "messages":    messages,\par
+            "temperature": temperature,\par
+            "max_tokens":  1024,\par
+        \},\par
+        timeout=60,\par
+    )\par
+    if resp.status_code == 429:\par
+        raise RateLimitError(f"Rate-limited on \{model\}")\par
+    if resp.status_code == 404:\par
+        raise SkipModelError(f"Model not found: \{model\}")\par
+    if resp.status_code in (401, 402, 403):\par
+        raise AuthError(f"OpenRouter auth/payment error \{resp.status_code\} on \{model\}: \{resp.text[:200]\}")\par
+    if resp.status_code != 200:\par
+        raise SkipModelError(f"OpenRouter error \{resp.status_code\} on \{model\}: \{resp.text[:200]\}")\par
+    data = resp.json()\par
+    try:\par
+        return data["choices"][0]["message"]["content"].strip()\par
+    except (KeyError, IndexError) as e:\par
+        raise RuntimeError(f"Unexpected OpenRouter response: \{data\}") from e\par
+\par
+\par
+class AuthError(Exception):\par
+    pass\par
+\par
+class RateLimitError(Exception):\par
+    pass\par
+\par
+class SkipModelError(Exception):\par
+    pass\par
+\par
+\par
+# ── Core LLM call with fallback chain ───────────────────────\par
+\par
+def call_llm(messages: list[dict], model: str = DEFAULT_MODEL, temperature: float = 0.4) -> str:\par
+    """\par
+    Call OpenRouter with automatic fallback across FREE_MODEL_FALLBACKS.\par
+    Skips models that return 429 (rate-limit) or 404 (not found) and tries the next.\par
+    """\par
+    # Start fallback logic\par
+    # (Removed the fatal exception for missing API keys to allow the new Keyless feature)\par
+\par
+    # Requested model first, then remaining fallbacks (deduped)\par
+    chain = [model] + [m for m in FREE_MODEL_FALLBACKS if m != model]\par
+\par
+    last_error = None\par
+    for attempt_model in chain:\par
+        try:\par
+            print(f"[LLM] Trying: \{attempt_model\}")\par
+            result = _call_single(messages, attempt_model, temperature)\par
+            if attempt_model != model:\par
+                print(f"[LLM] ✅ Used fallback: \{attempt_model\}")\par
+            return result\par
+        except (RateLimitError, SkipModelError) as e:\par
+            print(f"[LLM] ⚠️  Skipping \{attempt_model\}: \{e\}")\par
+            last_error = e\par
+            continue\par
+        except AuthError as e:\par
+            print(f"[LLM] ⛔ Auth/Payment error on \{attempt_model\}: \{e\}. Skipping remaining OpenRouter models.")\par
+            last_error = e\par
+            break\par
+        except Exception as e:\par
+            print(f"[LLM] ❌ Unexpected error on \{attempt_model\}: \{e\}")\par
+            last_error = e\par
+            continue\par
+\par
+    print(f"[LLM] ⚠️ All \{len(chain)\} OpenRouter models exhausted (likely invalid API key). Using EMERGENCY free fallback...")\par
+    \par
+    # -- EMERGENCY KEYLESS FALLBACK --\par
+    # If the user supplied a bad/revoked API key to Hugging Face, OpenRouter will fail every model with 401.\par
+    # We catch that complete failure here and silently use Pollinations so the app never breaks for the user.\par
+    try:\par
+        fallback_models = ["openai", "llama"]\par
+        for p_model in fallback_models:\par
+            print(f"[LLM] Trying set keyless fallback with model '\{p_model\}'...")\par
+            resp = requests.post(\par
+                "https://text.pollinations.ai/openai",\par
+                headers=\{"Content-Type": "application/json"\},\par
+                json=\{\par
+                    "model": p_model,\par
+                    "messages": messages,\par
+                    "temperature": temperature,\par
+                    "max_tokens": 1024,\par
+                \},\par
+                timeout=60,\par
+            )\par
+            try:\par
+                data = resp.json()\par
+                if "choices" in data and len(data["choices"]) > 0:\par
+                    return data["choices"][0]["message"]["content"].strip()\par
+                elif "error" in data:\par
+                    print(f"Pollinations error on \{p_model\}: \{data['error']\}. Trying next...")\par
+                    fallback_e = f"Pollinations error: \{data['error']\}"\par
+                    continue\par
+                else:\par
+                    fallback_e = f"Unexpected Pollinations response: \{data\}"\par
+                    continue\par
+            except json.JSONDecodeError:\par
+                if resp.status_code == 200 and resp.text:\par
+                    return resp.text.strip()\par
+                fallback_e = f"Pollinations non-JSON response: \{resp.text\}"\par
+                continue\par
+        raise RuntimeError(fallback_e)\par
+    except Exception as exc:\par
+        raise RuntimeError(f"All \{len(chain)\} models exhausted. Last error: \{last_error\}. And free fallback failed: \{exc\}")\par
+\par
+\par
+# ── QA ────────────────────────────────────────────────────────\par
+\par
+def answer_question(\par
+    question: str,\par
+    transcript: str,\par
+    visuals: str,\par
+    language: str = "English",\par
+    model: str = DEFAULT_MODEL,\par
+) -> dict:\par
+    """\par
+    Generate a detailed answer grounded in transcript + visual captions.\par
+    Returns \{ answer, transcript_excerpts, visual_captions_used, confidence \}.\par
+    """\par
+    system_msg = (\par
+        "You are an expert multimodal video analyst. "\par
+        "You will be given a video transcript and visual frame descriptions. "\par
+        "Answer the user's question thoroughly and accurately, citing specific parts of the transcript. "\par
+        "If the answer is not clearly in the video, say so honestly."\par
+    )\par
+\par
+    user_msg = f"""VIDEO TRANSCRIPT:\par
+\{transcript\}\par
+\par
+VISUAL FRAME DESCRIPTIONS:\par
+\{visuals\}\par
+\par
+QUESTION: \{question\}\par
+\par
+Instructions:\par
+- Answer in \{language\}.\par
+- Be detailed but concise (3-6 sentences).\par
+- Bold key terms using **term** markdown.\par
+- Extract 1-2 most relevant transcript sentences as evidence.\par
+- Extract 1-2 most relevant visual captions as evidence.\par
+- Rate your confidence as: High / Medium / Low.\par
+\par
+Format your response as valid JSON:\par
+\{\{\par
+  "answer": "...",\par
+  "transcript_excerpts": ["...", "..."],\par
+  "visual_captions": ["...", "..."],\par
+  "confidence": "High|Medium|Low",\par
+  "confidence_reason": "..."\par
+\}\}"""\par
+\par
+    raw = call_llm(\par
+        messages=[\par
+            \{"role": "system", "content": system_msg\},\par
+            \{"role": "user",   "content": user_msg\},\par
+        ],\par
+        model=model or DEFAULT_MODEL,\par
+        temperature=0.3,\par
+    )\par
+\par
+    # Parse JSON from response\par
+    try:\par
+        # Strip markdown code fences if present\par
+        clean = raw.strip()\par
+        if clean.startswith("```"):\par
+            clean = "\\n".join(clean.split("\\n")[1:])\par
+            if clean.endswith("```"):\par
+                clean = clean[:-3]\par
+        return json.loads(clean.strip())\par
+    except json.JSONDecodeError:\par
+        # Fallback: return raw text as answer\par
+        return \{\par
+            "answer": raw,\par
+            "transcript_excerpts": [],\par
+            "visual_captions": [],\par
+            "confidence": "Medium",\par
+            "confidence_reason": "Based on transcript + visual frames",\par
+        \}\par
+\par
+\par
+# ── Video Summarization ────────────────────────────────────────\par
+\par
+def summarize_video(\par
+    transcript: str,\par
+    visuals: str,\par
+    length: str = "short",\par
+    model: str = DEFAULT_MODEL,\par
+) -> dict:\par
+    """\par
+    Summarize the video content.\par
+    length: "short" | "detailed" | "chapters"\par
+    Returns \{ short, detailed, chapters \}.\par
+    """\par
+    length_instructions = \{\par
+        "short":    "Write a single concise paragraph (4-6 sentences) summarizing the video.",\par
+        "detailed": "Write 5-8 bullet-point key takeaways from the video.",\par
+        "chapters": "Identify 4-6 logical chapters/sections. For each provide a timestamp estimate and title.",\par
+    \}\par
+\par
+    user_msg = f"""VIDEO TRANSCRIPT:\par
+\{transcript\}\par
+\par
+VISUAL FRAME DESCRIPTIONS:\par
+\{visuals\}\par
+\par
+\{length_instructions.get(length, length_instructions['short'])\}\par
+\par
+CRITICAL: The content inside the JSON strings/arrays MUST be strictly plain text. Do NOT include any HTML tags (like <div> or <class="...">), CSS classes, or markdown bullet points (like -, *).\par
+\par
+Format as JSON:\par
+\{\{\par
+  "short": "One paragraph summary...",\par
+  "detailed": ["Point 1", "Point 2", ...],\par
+  "chapters": [\{\{"time": "0:00", "title": "Introduction"\}\}, ...]\par
+\}\}"""\par
+\par
+    raw = call_llm(\par
+        messages=[\{"role": "user", "content": user_msg\}],\par
+        model=model or DEFAULT_MODEL,\par
+        temperature=0.4,\par
+    )\par
+\par
+    try:\par
+        clean = raw.strip()\par
+        if clean.startswith("```"):\par
+            clean = "\\n".join(clean.split("\\n")[1:]).rstrip("` \\n")\par
+        return json.loads(clean.strip())\par
+    except json.JSONDecodeError:\par
+        return \{\par
+            "short": raw[:400],\par
+            "detailed": [raw],\par
+            "chapters": [\{"time": "0:00", "title": "Full Video"\}],\par
+        \}\par
+\par
+\par
+# ── Transcript Summarization ────────────────────────────────────\par
+\par
+def summarize_transcript(transcript: str, model: str = DEFAULT_MODEL) -> dict:\par
+    """\par
+    Extract key points, action items, and keywords from the transcript.\par
+    Returns \{ key_points, action_items, keywords \}.\par
+    """\par
+    user_msg = f"""VIDEO TRANSCRIPT:\par
+\{transcript\}\par
+\par
+Extract the following from the transcript:\par
+1. 5-7 key points (main ideas discussed)\par
+2. 2-4 action items (things the viewer might do based on the content)\par
+3. 10-15 important keywords or topics\par
+\par
+CRITICAL: The content inside the JSON arrays MUST be strictly plain text. Do NOT include any HTML tags (like <div> or <class="...">), CSS classes, or markdown bullet points (like -, *).\par
+\par
+Format as JSON:\par
+\{\{\par
+  "key_points": ["...", ...],\par
+  "action_items": ["...", ...],\par
+  "keywords": ["...", ...]\par
+\}\}"""\par
+\par
+    raw = call_llm(\par
+        messages=[\{"role": "user", "content": user_msg\}],\par
+        model=model or DEFAULT_MODEL,\par
+        temperature=0.3,\par
+    )\par
+\par
+    try:\par
+        clean = raw.strip()\par
+        if clean.startswith("```"):\par
+            clean = "\\n".join(clean.split("\\n")[1:]).rstrip("` \\n")\par
+        return json.loads(clean.strip())\par
+    except json.JSONDecodeError:\par
+        return \{\par
+            "key_points":   [raw[:200]],\par
+            "action_items": [],\par
+            "keywords":     [],\par
+        \}\par
+\par\par}
+
+{\b\f0\fs28 models.py\par}
+{\f1\fs20 """\par
+models.py – Lazy-loaded AI model singletons\par
+Loads Whisper and BLIP only once on first use to avoid repeated startup cost.\par
+"""\par
+\par
+import os\par
+import time\par
+import torch\par
+from dotenv import load_dotenv\par
+\par
+load_dotenv()\par
+\par
+WHISPER_MODEL_SIZE = os.getenv("WHISPER_MODEL", "base")   # base = fast, 140MB\par
+_whisper = None\par
+_blip_processor = None\par
+_blip_model = None\par
+_model_status = \{\par
+    "whisper": "not_loaded",   # not_loaded | loading | ready | error\par
+    "blip":    "not_loaded",\par
+    "whisper_load_time": None,\par
+    "blip_load_time": None,\par
+\}\par
+\par
+# ── Whisper ─────────────────────────────────────────────────\par
+class _FasterWhisperWrapper:\par
+    """Wraps faster-whisper to match openai-whisper's transcribe() output format."""\par
+    def __init__(self, model):\par
+        self._model = model\par
+\par
+    def transcribe(self, audio_path, language=None, word_timestamps=False, **kwargs):\par
+        segments_iter, info = self._model.transcribe(\par
+            audio_path,\par
+            language=language,\par
+            word_timestamps=word_timestamps,\par
+        )\par
+        segments = []\par
+        full_text_parts = []\par
+        for seg in segments_iter:\par
+            segments.append(\{\par
+                "start": seg.start,\par
+                "end":   seg.end,\par
+                "text":  seg.text.strip(),\par
+            \})\par
+            full_text_parts.append(seg.text.strip())\par
+        return \{\par
+            "text": " ".join(full_text_parts),\par
+            "segments": segments,\par
+        \}\par
+\par
+def get_whisper():\par
+    """Returns a loaded faster-whisper model wrapped in openai-whisper-compatible API."""\par
+    global _whisper, _model_status\par
+    if _whisper is None:\par
+        _model_status["whisper"] = "loading"\par
+        t0 = time.time()\par
+        from faster_whisper import WhisperModel\par
+        print(f"[VideoQA] Loading faster-whisper-\{WHISPER_MODEL_SIZE\}...")\par
+        model = WhisperModel(WHISPER_MODEL_SIZE, device="cpu", compute_type="int8")\par
+        _whisper = _FasterWhisperWrapper(model)\par
+        elapsed = round(time.time() - t0, 1)\par
+        _model_status["whisper"] = "ready"\par
+        _model_status["whisper_load_time"] = elapsed\par
+        print(f"[VideoQA] faster-whisper-\{WHISPER_MODEL_SIZE\} loaded in \{elapsed\}s ✓")\par
+    return _whisper\par
+\par
+\par
+# ── BLIP Vision Captioning ───────────────────────────────────\par
+def get_blip():\par
+    """Returns (processor, model) for BLIP-base (lazy singleton)."""\par
+    global _blip_processor, _blip_model, _model_status\par
+    if _blip_model is None:\par
+        _model_status["blip"] = "loading"\par
+        t0 = time.time()\par
+        from transformers import BlipProcessor, BlipForConditionalGeneration\par
+        # Use blip-base (~440MB) instead of blip-large (~900MB) — ~3× faster on CPU\par
+        model_name = "Salesforce/blip-image-captioning-base"\par
+        print(f"[VideoQA] Loading BLIP-base...")\par
+        _blip_processor = BlipProcessor.from_pretrained(model_name)\par
+        _blip_model = BlipForConditionalGeneration.from_pretrained(\par
+            model_name,\par
+            torch_dtype=torch.float16 if torch.cuda.is_available() else torch.float32\par
+        )\par
+        device = "cuda" if torch.cuda.is_available() else "cpu"\par
+        _blip_model = _blip_model.to(device)\par
+        _blip_model.eval()\par
+        elapsed = round(time.time() - t0, 1)\par
+        _model_status["blip"] = "ready"\par
+        _model_status["blip_load_time"] = elapsed\par
+        print(f"[VideoQA] BLIP-base loaded on \{device\} in \{elapsed\}s ✓")\par
+    return _blip_processor, _blip_model\par
+\par
+\par
+def get_model_status() -> dict:\par
+    """Returns current load status for all models — used by /status endpoint."""\par
+    device = "cuda" if torch.cuda.is_available() else "cpu"\par
+    return \{\par
+        "device": device,\par
+        "whisper": \{\par
+            "model":  WHISPER_MODEL_SIZE,\par
+            "status": _model_status["whisper"],\par
+            "load_time_sec": _model_status["whisper_load_time"],\par
+        \},\par
+        "blip": \{\par
+            "model":  "blip-image-captioning-base",\par
+            "status": _model_status["blip"],\par
+            "load_time_sec": _model_status["blip_load_time"],\par
+        \},\par
+    \}\par
+\par
+\par
+# ── Session Store ────────────────────────────────────────────\par
+# Maps session_id → \{ transcript, visuals, video_path, transcript_lines \}\par
+_sessions: dict = \{\}\par
+\par
+def get_session_store() -> dict:\par
+    return _sessions\par
+\par
+def save_session(session_id: str, data: dict):\par
+    _sessions[session_id] = data\par
+\par
+def get_session(session_id: str) -> dict | None:\par
+    return _sessions.get(session_id)\par
+\par
+\par\par}
+
+{\b\f0\fs28 video_utils.py\par}
+{\f1\fs20 """\par
+video_utils.py – Video processing helpers\par
+Covers: audio extraction, smart keyframe sampling, BLIP captioning, clip extraction.\par
+"""\par
+\par
+import os\par
+import time\par
+import subprocess\par
+import cv2\par
+import torch\par
+import numpy as np\par
+from PIL import Image\par
+\par
+# ── MoviePy import (for clip extraction only – v1.x and v2.x) ──\par
+try:\par
+    from moviepy.editor import VideoFileClip   # moviepy v1.x\par
+except ImportError:\par
+    from moviepy import VideoFileClip          # moviepy v2.x\par
+\par
+from models import get_blip\par
+\par
+MAX_FRAMES = int(os.getenv("MAX_FRAMES", "3"))\par
+CLIP_DURATION = float(os.getenv("CLIP_DURATION", "30"))\par
+\par
+\par
+# ── FFMPEG helper ────────────────────────────────────────────\par
+\par
+def _get_ffmpeg() -> str:\par
+    """Return path to bundled ffmpeg binary (from imageio_ffmpeg/moviepy)."""\par
+    try:\par
+        import imageio_ffmpeg\par
+        return imageio_ffmpeg.get_ffmpeg_exe()\par
+    except Exception:\par
+        return "ffmpeg"   # fall back to system PATH\par
+\par
+\par
+# ── Audio ────────────────────────────────────────────────────\par
+\par
+def extract_audio(video_path: str, out_path: str = "audio.wav", start_sec: float = None, end_sec: float = None) -> str:\par
+    """\par
+    Extract 16kHz mono WAV audio from video using ffmpeg subprocess.\par
+    Much faster and more reliable than MoviePy's write_audiofile on Windows.\par
+    """\par
+    t0 = time.time()\par
+    print(f"[VideoQA] Extracting audio from \{os.path.basename(video_path)\}...")\par
+    ffmpeg = _get_ffmpeg()\par
+    cmd = [\par
+        ffmpeg,\par
+        "-y",                   # overwrite output\par
+    ]\par
+    if start_sec is not None:\par
+        cmd.extend(["-ss", str(start_sec)])\par
+    if end_sec is not None:\par
+        duration = end_sec - (start_sec or 0.0)\par
+        cmd.extend(["-t", str(duration)])\par
+    cmd.extend([\par
+        "-i", video_path,       # input video\par
+        "-vn",                  # no video\par
+        "-acodec", "pcm_s16le", # WAV format\par
+        "-ar", "16000",         # 16kHz sample rate (required by Whisper)\par
+        "-ac", "1",             # mono\par
+        out_path,\par
+    ])\par
+    result = subprocess.run(\par
+        cmd,\par
+        stdout=subprocess.PIPE,\par
+        stderr=subprocess.PIPE,\par
+        timeout=300,            # 5 min timeout\par
+    )\par
+    if result.returncode != 0:\par
+        err = result.stderr.decode("utf-8", errors="replace")[-500:]\par
+        raise RuntimeError(f"ffmpeg audio extraction failed:\\n\{err\}")\par
+    print(f"[VideoQA] Audio extracted in \{round(time.time()-t0,1)\}s -> \{out_path\}")\par
+    return out_path\par
+\par
+\par
+# ── Frame Extraction ─────────────────────────────────────────\par
+\par
+def _compute_frame_diff(prev: np.ndarray, curr: np.ndarray) -> float:\par
+    """Mean absolute pixel difference between two frames (grayscale)."""\par
+    p = cv2.cvtColor(prev, cv2.COLOR_BGR2GRAY).astype(float)\par
+    c = cv2.cvtColor(curr, cv2.COLOR_BGR2GRAY).astype(float)\par
+    return float(np.mean(np.abs(p - c)))\par
+\par
+\par
+def extract_keyframes(video_path: str, n: int = MAX_FRAMES, start_sec: float = None, end_sec: float = None) -> list[str]:\par
+    """\par
+    Smart keyframe extraction:\par
+    1. Sample frames uniformly across the video.\par
+    2. Additionally pick frames with high scene-change score.\par
+    Returns up to `n` unique frame file paths.\par
+    """\par
+    cap = cv2.VideoCapture(video_path)\par
+    total = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))\par
+    fps   = cap.get(cv2.CAP_PROP_FPS) or 25.0\par
+\par
+    start_frame = int(start_sec * fps) if start_sec is not None else 0\par
+    end_frame = int(end_sec * fps) if end_sec is not None else total\par
+\par
+    saved_paths: list[str] = []\par
+    os.makedirs("frames", exist_ok=True)\par
+\par
+    if total <= 0 or start_frame >= end_frame:\par
+        cap.release()\par
+        return saved_paths\par
+\par
+    if start_frame > 0:\par
+        cap.set(cv2.CAP_PROP_POS_FRAMES, start_frame)\par
+        \par
+    frames_to_process = end_frame - start_frame\par
+\par
+    # Uniform sampling indices\par
+    uniform_indices = set(\par
+        start_frame + int(i * frames_to_process / n) for i in range(n)\par
+    )\par
+\par
+    prev_frame = None\par
+    frame_scores: list[tuple[float, int, np.ndarray]] = []\par
+\par
+    count = start_frame\par
+    while cap.isOpened() and count < end_frame:\par
+        ret, frame = cap.read()\par
+        if not ret:\par
+            break\par
+\par
+        if prev_frame is not None:\par
+            score = _compute_frame_diff(prev_frame, frame)\par
+            frame_scores.append((score, count, frame.copy()))\par
+        elif count == start_frame:\par
+            # Always keep first frame\par
+            frame_scores.append((999.0, count, frame.copy()))\par
+\par
+        prev_frame = frame\par
+        count += 1\par
+\par
+    cap.release()\par
+\par
+    if not frame_scores:\par
+        return saved_paths\par
+\par
+    # Pick top-n frames by scene-change score, prioritising uniform coverage\par
+    # Combine: add uniform indices to the selection weighted by score\par
+    uniform_frames = []\par
+    scene_frames = []\par
+\par
+    # Sort by score descending\par
+    sorted_by_score = sorted(frame_scores, key=lambda x: x[0], reverse=True)\par
+\par
+    # Collect top scene-change frames\par
+    selected_indices: set[int] = set()\par
+    for score, idx, frm in sorted_by_score:\par
+        if len(selected_indices) >= n:\par
+            break\par
+        # avoid picking frames too close together (< 1 second)\par
+        too_close = any(abs(idx - s) < fps for s in selected_indices)\par
+        if not too_close:\par
+            selected_indices.add(idx)\par
+\par
+    # Pad with uniform indices if needed\par
+    for ui in sorted(uniform_indices):\par
+        if len(selected_indices) >= n:\par
+            break\par
+        selected_indices.add(ui)\par
+\par
+    # Write selected frames to disk (sorted by index = chronological)\par
+    frame_dict = \{idx: frm for _, idx, frm in frame_scores\}\par
+    for idx in sorted(selected_indices):\par
+        if idx in frame_dict:\par
+            path = f"frames/frame_\{idx:06d\}.jpg"\par
+            cv2.imwrite(path, frame_dict[idx])\par
+            saved_paths.append(path)\par
+\par
+    return saved_paths[:n]\par
+\par
+\par
+def extract_specific_frames(video_path: str, timestamps: list[float]) -> list[str]:\par
+    """\par
+    Extract specific frames by timestamp.\par
+    timestamps: list of floats in seconds.\par
+    """\par
+    cap = cv2.VideoCapture(video_path)\par
+    fps = cap.get(cv2.CAP_PROP_FPS) or 25.0\par
+    \par
+    saved_paths = []\par
+    os.makedirs("frames", exist_ok=True)\par
+    \par
+    for ts in sorted(set(timestamps)):\par
+        frame_idx = int(ts * fps)\par
+        cap.set(cv2.CAP_PROP_POS_FRAMES, frame_idx)\par
+        ret, frame = cap.read()\par
+        if ret:\par
+            path = f"frames/frame_\{frame_idx:06d\}.jpg"\par
+            cv2.imwrite(path, frame)\par
+            saved_paths.append(path)\par
+            \par
+    cap.release()\par
+    return saved_paths\par
+\par
+\par
+# ── BLIP Captioning ──────────────────────────────────────────\par
+\par
+def caption_frames(frame_paths: list[str]) -> list[dict]:\par
+    """\par
+    Generate captions for each frame using BLIP-base.\par
+    Returns list of \{ path, caption, frame_index \}.\par
+    """\par
+    print(f"[VideoQA] Captioning \{len(frame_paths)\} frame(s) with BLIP...")\par
+    t_total = time.time()\par
+    processor, model = get_blip()\par
+    device = next(model.parameters()).device\par
+    results = []\par
+\par
+    for i, path in enumerate(frame_paths):\par
+        t0 = time.time()\par
+        try:\par
+            image = Image.open(path).convert("RGB")\par
+            inputs = processor(image, return_tensors="pt").to(device)\par
+\par
+            with torch.no_grad():\par
+                out = model.generate(\par
+                    **inputs,\par
+                    max_new_tokens=60,\par
+                    num_beams=4,\par
+                )\par
+\par
+            caption = processor.decode(out[0], skip_special_tokens=True)\par
+            frame_idx = int(os.path.basename(path).replace("frame_", "").replace(".jpg", ""))\par
+            results.append(\{\par
+                "path": path,\par
+                "caption": caption,\par
+                "frame_index": frame_idx,\par
+            \})\par
+            print(f"[VideoQA]   Frame \{i+1\}/\{len(frame_paths)\} captioned in \{round(time.time()-t0,1)\}s: \{caption[:60]\}")\par
+        except Exception as e:\par
+            print(f"[VideoQA]   Frame \{i+1\} failed: \{e\}")\par
+            results.append(\{"path": path, "caption": "Frame could not be captioned.", "frame_index": 0\})\par
+\par
+    print(f"[VideoQA] All frames captioned in \{round(time.time()-t_total,1)\}s")\par
+    return results\par
+\par
+\par
+# ── Clip Extraction ──────────────────────────────────────────\par
+\par
+def extract_clip(\par
+    video_path: str,\par
+    start_sec: float,\par
+    end_sec: float,\par
+    out_path: str = "relevant_clip.mp4"\par
+) -> str:\par
+    """\par
+    Extract a sub-clip using ffmpeg subprocess.\par
+    Much faster and more reliable than MoviePy on Windows.\par
+    """\par
+    t0 = time.time()\par
+    duration_sec = max(1.0, end_sec - start_sec)\par
+    start_sec = max(0.0, start_sec)\par
+    print(f"[VideoQA] Extracting clip \{start_sec:.1f\}s -> \{end_sec:.1f\}s...")\par
+    ffmpeg = _get_ffmpeg()\par
+    cmd = [\par
+        ffmpeg,\par
+        "-y",\par
+        "-ss", str(start_sec),       # seek to start (fast seek before -i)\par
+        "-i", video_path,\par
+        "-t", str(duration_sec),      # duration\par
+        "-c:v", "libx264",\par
+        "-c:a", "aac",\par
+        "-movflags", "+faststart",    # web-compatible MP4\par
+        out_path,\par
+    ]\par
+    result = subprocess.run(\par
+        cmd,\par
+        stdout=subprocess.PIPE,\par
+        stderr=subprocess.PIPE,\par
+        timeout=120,\par
+    )\par
+    if result.returncode != 0:\par
+        err = result.stderr.decode("utf-8", errors="replace")[-300:]\par
+        raise RuntimeError(f"ffmpeg clip extraction failed:\\n\{err\}")\par
+    print(f"[VideoQA] Clip extracted in \{round(time.time()-t0,1)\}s -> \{out_path\}")\par
+    return out_path\par
+\par
+\par
+# ── Transcript → Timestamp Mapping ───────────────────────────\par
+\par
+def find_clip_timestamps(\par
+    transcript_segments: list[dict],\par
+    question: str,\par
+    video_duration: float,\par
+    clip_duration: float = CLIP_DURATION,\par
+) -> tuple[float, float]:\par
+    """\par
+    Find the most relevant clip for a question.\par
+    Uses simple keyword overlap over Whisper word-level segments.\par
+    Falls back to 1/3 into the video if nothing found.\par
+\par
+    transcript_segments: list of \{ start, end, text \} dicts from Whisper.\par
+    Returns (start_sec, end_sec).\par
+    """\par
+    if not transcript_segments:\par
+        start = video_duration / 3\par
+        return start, min(video_duration, start + clip_duration)\par
+\par
+    q_words = set(question.lower().split())\par
+    best_score = -1\par
+    best_start = 0.0\par
+\par
+    for seg in transcript_segments:\par
+        seg_words = set(seg.get("text", "").lower().split())\par
+        overlap = len(q_words & seg_words)\par
+        if overlap > best_score:\par
+            best_score = overlap\par
+            best_start = seg.get("start", 0.0)\par
+\par
+    end = min(video_duration, best_start + clip_duration)\par
+    return best_start, end\par
+\par\par}
+
+{\b\f0\fs28 Dockerfile\par}
+{\f1\fs20 # Use Python 3.10 slim image suitable for ML\par
+FROM python:3.10-slim\par
+\par
+# Install system dependencies required for OpenCV and ffmpeg\par
+RUN apt-get update && apt-get install -y \\\par
+    ffmpeg \\\par
+    libsm6 \\\par
+    libxext6 \\\par
+    libgl1 \\\par
+    && rm -rf /var/lib/apt/lists/*\par
+\par
+# Set up a non-root user for Hugging Face Spaces compatibility\par
+RUN useradd -m -u 1000 user\par
+USER user\par
+ENV PATH="/home/user/.local/bin:$PATH"\par
+\par
+# Upgrade pip and install an older setuptools (v70+ removed pkg_resources which breaks openai-whisper)\par
+RUN pip install --no-cache-dir --upgrade pip\par
+RUN pip install --no-cache-dir "setuptools<70.0.0" wheel\par
+\par
+# Set early environment variables\par
+ENV HOST=0.0.0.0\par
+ENV PORT=7860\par
+\par
+# Set working directory\par
+WORKDIR /home/user/app\par
+\par
+# Copy the backend requirements first for better caching\par
+COPY --chown=user backend/requirements.txt ./backend/\par
+\par
+# IMPORTANT: Install CPU-only PyTorch. \par
+# The default PyTorch library is a massive 2.5GB and often crashes the free Hugging Face builder. The CPU version is ~200MB!\par
+RUN pip install --no-cache-dir torch==2.2.2 torchvision==0.17.2 --index-url https://download.pytorch.org/whl/cpu\par
+\par
+# Install the rest (using --no-build-isolation so it uses our downgraded setuptools instead of fetching the latest broken one)\par
+RUN pip install --no-cache-dir --no-build-isolation -r backend/requirements.txt\par
+\par
+# Create necessary directories\par
+RUN mkdir -p /home/user/app/backend/uploads /home/user/app/backend/outputs /home/user/app/backend/frames\par
+\par
+# Copy the rest of the application\par
+COPY --chown=user . .\par
+\par
+# Expose port (7860 is default for Hugging Face Spaces Docker)\par
+EXPOSE 7860\par
+\par
+# Change to the backend directory and run Uvicorn\par
+WORKDIR /home/user/app/backend\par
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "7860"]\par
+\par\par}
+
+{\b\f0\fs28 requirements.txt\par}
+{\f1\fs20 # VideoQA Backend – Python Requirements\par
+# Install: pip install -r requirements.txt\par
+\par
+# ── Web Framework ─────────────────────────────────────────────\par
+fastapi==0.110.0\par
+uvicorn[standard]==0.29.0\par
+python-multipart==0.0.9\par
+python-dotenv==1.0.0\par
+\par
+# ── AI Models ─────────────────────────────────────────────────\par
+# faster-whisper – Speech-to-text (base model auto-downloaded on first run)\par
+faster-whisper\par
+\par
+# BLIP – Vision captioning (large model ~900MB, auto-downloaded)\par
+transformers==4.40.0\par
+torch==2.2.2\par
+torchvision==0.17.2\par
+Pillow==10.3.0\par
+\par
+# ── Video Processing ──────────────────────────────────────────\par
+moviepy==1.0.3\par
+opencv-python==4.9.0.80\par
+yt-dlp\par
+\par
+# ── HTTP / LLM ────────────────────────────────────────────────\par
+requests==2.31.0\par
+\par
+# ── Utilities ─────────────────────────────────────────────────\par
+numpy==1.26.4\par
+pydantic==2.6.4\par
+\par
+# ── Optional: ngrok for remote access ────────────────────────\par
+# pyngrok==7.1.6\par
+\par\par}
+
+{\b\f0\fs28 upload_to_hf.py\par}
+{\f1\fs20 import os\par
+from dotenv import load_dotenv\par
+from huggingface_hub import HfApi\par
+\par
+# Load environment variables\par
+load_dotenv("backend/.env")\par
+\par
+# Get token\par
+token = os.getenv("HF_TOKEN")\par
+if not token:\par
+    print("ERROR: HF_TOKEN not found! Please save your backend/.env file.")\par
+    exit(1)\par
+\par
+api = HfApi(token=token)\par
+repo_id = "mohanvannemreddy7/genvideoai"\par
+\par
+print(f"Uploading all files to: https://huggingface.co/spaces/\{repo_id\}...")\par
+\par
+# Upload the current folder, replacing remote files but ignoring git, venv, and cache\par
+api.upload_folder(\par
+    folder_path=".",\par
+    repo_id=repo_id,\par
+    repo_type="space",\par
+    delete_patterns="*",  # This ensures any remote files not present locally are deleted\par
+    ignore_patterns=[\par
+        ".git/*",\par
+        "backend/venv/*",\par
+        "backend/__pycache__/*",\par
+        "backend/outputs/*",\par
+        "backend/uploads/*",\par
+        "upload_to_hf.py", # Exclude this script itself\par
+        "backend/cookies.txt", # Don't push private cookies\par
+        "backend/.env" # SECRETS: Exclude environment variables\par
+    ]\par
+)\par
+\par
+print("Upload complete!")\par
+\par\par}
+
+}
